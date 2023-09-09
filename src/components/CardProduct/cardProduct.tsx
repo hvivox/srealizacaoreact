@@ -6,7 +6,7 @@ type Props = {
   photo: string;
 };
 
-export const BotaoCadastro = (props: Props) => {
+export const CardProduct = (props: Props) => {
   const modalCadastro = () => {
     alert("abertura modal");
   };
