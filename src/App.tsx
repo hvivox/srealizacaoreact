@@ -1,7 +1,7 @@
 import "./App.css";
 import { CardProduct } from "./components/CardProduct/cardProduct.tsx";
 
-import {ListaFiltradaOrdenada} from "./components/listaFiltradaOrdenada/ListaFiltradaOrdenada.tsx"; // Importe o CSS do Bootstrap
+import {ListaFiltradaOrdenada} from "./components/ListaFiltradaOrdenada/ListaFiltradaOrdenada.tsx"; // Importe o CSS do Bootstrap
 
 function App() {
   const getWeekDay = () => {
@@ -15,7 +15,7 @@ function App() {
         <h3>{getWeekDay()}</h3>
         <CardProduct name="xmogenes" price={10.42} photo="testeeststeste" />
         <CardProduct name="hmsilva" price={20.42} photo="linkfoto" />
-       <ListaFiltradaOrdenada/>
+        <ListaFiltradaOrdenada/>
       </div>
     </div>
   );
