@@ -16,7 +16,6 @@ export const ListaFiltradaOrdenada = () => {
     /* fim metodos auxiliares do modal -------------------------------------*/
 
 
-
     /* filtros para as consultas -------------------------------------*/
     //const lista = listaProdutos.map((produto) => <li>{produto.nome}</li>);
     const listaFiltrada = listaProdutos.filter((produto) => produto.nome != "segundo");
@@ -70,16 +69,13 @@ export const ListaFiltradaOrdenada = () => {
                     </li>
                 ))}
             </ul>
-
-
         </div>
     );
 
 
-
     return (
         <div>
-            <button onClick={handleOpenModal}>Lista Ordenada e Filtrada</button>
+            <button className="btn btn-danger" onClick={handleOpenModal}>Lista Ordenada e Filtrada</button>
 
             <Modal
                 isOpen={isModalOpen}

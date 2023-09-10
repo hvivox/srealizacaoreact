@@ -1,4 +1,4 @@
-import "bootstrap/dist/css/bootstrap.css"; // Importe o CSS do Bootstrap
+//import "bootstrap/dist/css/bootstrap.css"; // Importe o CSS do Bootstrap
 
 type Props = {
   name: string;

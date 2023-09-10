@@ -1,7 +1,8 @@
 import "./App.css";
 import { CardProduct } from "./components/CardProduct/cardProduct.tsx";
+import {ListaFiltradaOrdenada} from "./components/ListaFiltradaOrdenada/ListaFiltradaOrdenada.tsx";
+import {ModalPrincipal} from "./components/ModalPrincipal/ModalPrincipal.tsx"; // Importe o CSS do Bootstrap
 
-import {ListaFiltradaOrdenada} from "./components/ListaFiltradaOrdenada/ListaFiltradaOrdenada.tsx"; // Importe o CSS do Bootstrap
 
 function App() {
   const getWeekDay = () => {
@@ -13,8 +14,11 @@ function App() {
     <div className="App">
       <div className="container">
         <h3>{getWeekDay()}</h3>
-        <CardProduct name="xmogenes" price={10.42} photo="testeeststeste" />
-        <CardProduct name="hmsilva" price={20.42} photo="linkfoto" />
+       <ModalPrincipal nameButtonModal="Lista de cartões">
+           <CardProduct name="xmogenes" price={10.42} photo="testeeststeste" />
+           <CardProduct name="hmsilva" price={18.42} photo="link da imagem" />
+       </ModalPrincipal>
+
         <ListaFiltradaOrdenada/>
       </div>
     </div>
