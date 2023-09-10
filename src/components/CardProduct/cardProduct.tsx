@@ -1,5 +1,5 @@
 //import "bootstrap/dist/css/bootstrap.css"; // Importe o CSS do Bootstrap
-import axios from 'axios';
+import {api} from "../../utils/api.ts";
 
 type Props = {
     name: string;
@@ -13,7 +13,7 @@ export const CardProduct = (props: Props) => {
     };
 
     const handleGetPosts = () => {
-        axios.get('https://jsonplaceholder.typicode.com/posts')
+        api.get('/posts')
             .then( (response)=>{
                 console.log(response.data);
             });
