@@ -1,6 +1,7 @@
 import { Table, Modal } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Folha {
   id: number;
@@ -14,6 +15,7 @@ export const ListaFolhaView = () => {
   const [listaEntidade, setListaEntidade] = useState<Folha[]>([]);
   const [isErroResposta, setIsErroResposta] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const consultaFolhaList = async () => {
     await axios
@@ -59,6 +61,7 @@ export const ListaFolhaView = () => {
   };
 
   const handleEdit = (record: Folha) => {
+    navigate(`/editar/${record.id}`);
     console.log("Editando:", record);
     // Aqui você pode navegar para a tela de edição ou abrir um modal de edição
   };
