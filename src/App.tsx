@@ -2,7 +2,7 @@ import "./App.css";
 
 import { MainRoutes } from "./routes/MainRoutes.tsx";
 import "antd/dist/antd.css";
-import {Navbar} from "./pages/Navbar/Navbar.tsx";
+import { Navbar } from "./pages/Navbar/Navbar.tsx";
 
 function App() {
   const getWeekDay = () => {
@@ -13,7 +13,7 @@ function App() {
     <div className="App">
       <div className="container">
         <h3>{getWeekDay()}</h3>
-        <Navbar/>
+        <Navbar />
         <header>
           <h3>SISTEMA Realização</h3>
         </header>

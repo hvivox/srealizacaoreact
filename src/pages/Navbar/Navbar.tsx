@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { Menu, Typography } from "antd";
+import { useAppSelector } from "../../redux/hooks/useAppSelector";
 
 export const Navbar = () => {
+  const user = useAppSelector((state) => state.user);
+
   const { Title } = Typography;
 
   return (
@@ -25,8 +28,9 @@ export const Navbar = () => {
           <Link to="/lista-folha">Lista Folha</Link>
         </Menu.Item>
         <Menu.Item key="about">
-          <Link to="/about">Sobre</Link>
+          <Link to="/about">Sobre..</Link>
         </Menu.Item>
+        <Menu.Item key="useName">{user.name} </Menu.Item>
       </Menu>
     </div>
   );
