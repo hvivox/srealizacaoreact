@@ -1,4 +1,4 @@
-// FolhaEditPage.tsx
+// SheetEditPage.tsx
 
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -7,15 +7,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { DatePicker, InputNumber } from "antd";
 import moment from "moment";
 
-interface Folha {
+interface Sheet {
   id: number;
-  foco: string;
-  dtarealizacao: Date;
-  notadia: number;
+  focus: string;
+  realizationDate: Date;
+  dayNote: number;
 }
 
-export const CadastroFolhaView = () => {
-  const [folha, setFolha] = useState<Folha | null>(null);
+export const SheetRegisterView = () => {
+  const [sheet, setSheet] = useState<Sheet | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -24,12 +24,12 @@ export const CadastroFolhaView = () => {
     if (id) {
       setIsLoading(true);
       axios
-        .get(`http://localhost:8080/folhas/${id}`)
+        .get(`http://localhost:8080/sheets/${id}`)
         .then((response) => {
-          setFolha(response.data);
+          setSheet(response.data);
         })
         .catch((error) => {
-          console.error("Erro ao buscar a folha", error);
+          console.error("Erro ao buscar folha", error);
         })
         .finally(() => {
           setIsLoading(false);
@@ -41,43 +41,43 @@ export const CadastroFolhaView = () => {
   const handleDateChange = (date: moment.Moment | null, dateString: string) => {
     console.log(dateString);
     if (date) {
-      setFolha((prevFolha) => {
-        if (prevFolha === null) return null;
+      setSheet((prevSheet) => {
+        if (prevSheet === null) return null;
 
-        // Já que prevFolha não é null, sabemos que as propriedades não serão undefined
-        return { ...prevFolha, dtarealizacao: date.toDate() };
+        // Já que prevSheet não é null, sabemos que as propriedades não serão undefined
+        return { ...prevSheet, realizationDate: date.toDate() };
       });
     } else {
       // Aqui você pode definir como quer lidar quando a data for removida/limpa
-      setFolha((prevFolha) => {
-        if (prevFolha === null) return null;
+      setSheet((prevSheet) => {
+        if (prevSheet === null) return null;
 
-        return { ...prevFolha, dtarealizacao: new Date() }; // ou null, se a data puder ser nula
+        return { ...prevSheet, realizationDate: new Date() }; // ou null, se a data puder ser nula
       });
     }
   };
 
   const handleNotaChange = (value: number | null) => {
-    setFolha((prevFolha) => {
-      if (prevFolha === null) return null;
+    setSheet((prevSheet) => {
+      if (prevSheet === null) return null;
 
       // Se value for null, defina notadia como um valor padrão, como 0
-      return { ...prevFolha, notadia: value ?? 0 };
+      return { ...prevSheet, dayNote: value ?? 0 };
     });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (folha) {
+    if (sheet) {
       setIsLoading(true);
       axios
-        .put(`http://localhost:8080/folhas/${folha.id}`, folha)
+        .put(`http://localhost:8080/sheets/${sheet.id}`, sheet)
         .then((response) => {
-          navigate("/lista-folha"); // ou para a rota onde está a lista
+          navigate("/sheet-list"); // ou para a rota onde está a lista
           console.log(response.data);
         })
         .catch((error) => {
-          console.error("Erro ao atualizar a folha", error);
+          console.error("Erro ao atualizar a sheet", error);
         })
         .finally(() => {
           setIsLoading(false);
@@ -87,35 +87,35 @@ export const CadastroFolhaView = () => {
 
   if (isLoading) return <p>Carregando...</p>;
 
-  if (!folha) return <p>Folha não encontrada ou ID não fornecido</p>;
+  if (!sheet) return <p>Folha não encontrada ou ID não fornecido</p>;
 
   return (
     <form onSubmit={handleSubmit}>
       {/* Campo para 'foco' */}
-      <label htmlFor="foco">Foco:</label>
+      <label htmlFor="focus">Foco:</label>
       <input
-        id="foco"
-        value={folha?.foco ?? ""}
-        onChange={(e) => setFolha(folha ? { ...folha, foco: e.target.value } : null)}
+        id="focus"
+        value={sheet?.focus ?? ""}
+        onChange={(e) => setSheet(sheet ? { ...sheet, focus: e.target.value } : null)}
         required
       />
 
       {/* Campo para 'dtarealizacao' */}
-      <label htmlFor="dtarealizacao">Data de Realização:</label>
+      <label htmlFor="realizationDate">Data de Realização:</label>
       <DatePicker
-        id="dtarealizacao"
+        id="realizationDate"
         format="DD/MM/YYYY"
-        value={folha?.dtarealizacao ? moment(folha.dtarealizacao) : null}
+        value={sheet?.realizationDate ? moment(sheet.realizationDate) : null}
         onChange={handleDateChange}
       />
 
       {/* Campo para 'notadia' */}
-      <label htmlFor="notadia">Nota do Dia:</label>
+      <label htmlFor="dayNote">Nota do Dia:</label>
       <InputNumber
-        id="notadia"
+        id="dayNote"
         min={0}
         max={10}
-        value={folha?.notadia ?? 0}
+        value={sheet?.dayNote ?? 0}
         onChange={handleNotaChange}
       />
 
