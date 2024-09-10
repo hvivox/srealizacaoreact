@@ -5,19 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setName } from "../redux/reducers/useReducer";
 import { useAppSelector } from "../redux/hooks/useAppSelector";
-interface Sheet {
-  id: number;
-  focus: string;
-  realizationDate: Date;
-  dayNote: number;
-  //acoes?: any; // Adicione os tipos apropriados se tiver uma estrutura definida para ações
-}
-
-interface Pagination {
-  current: number;
-  pageSize: number;
-  totalItem: number;
-}
+import { Pagination, Sheet } from "../types/Types";
 
 export const SheetListView = () => {
   const [entityList, setEntityList] = useState<Sheet[]>([]);
@@ -35,7 +23,6 @@ export const SheetListView = () => {
   });
 
   useEffect(() => {
-    console.log("pagination.current", pagination.current);
     sheetConsultList(pagination.current - 1, pagination.pageSize);
   }, [pagination.current, pagination.pageSize, pagination.totalItem]);
 
@@ -91,7 +78,7 @@ export const SheetListView = () => {
   };
 
   const handleEdit = (record: Sheet) => {
-    navigate(`/edite/${record.id}`);
+    navigate(`/edit/${record.id}`);
     console.log("Editando:", record);
     // Aqui você pode navegar para a tela de edição ou abrir um modal de edição
   };
@@ -117,11 +104,6 @@ export const SheetListView = () => {
       },
     });
   }
-
-  // LISTA A CONSULTA AO RENDENIZAR A TELA
-  /* useEffect(() => {
-    sheetConsultList();
-  }, []);*/
 
   const columns = [
     {
