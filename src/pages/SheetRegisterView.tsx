@@ -1,5 +1,3 @@
-// SheetEditPage.tsx
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
@@ -7,13 +5,8 @@ import { DatePicker, Form, Input, InputNumber, Button, Row, Col } from "antd";
 
 import moment from "moment";
 import { TitleForm } from "../components/LayoutForm/TitleForm";
-
-interface Sheet {
-  id: number;
-  focus: string;
-  realizationDate: Date;
-  dayNote: number;
-}
+import { TodoList } from "../components/Todo/TodoList";
+import { Sheet } from "../types/Types";
 
 export const SheetRegisterView = () => {
   const [form] = Form.useForm();
@@ -74,13 +67,25 @@ export const SheetRegisterView = () => {
 
   if (isLoading) return <p>Carregando...</p>;
 
+  // Atualiza o JSON sempre que os campos do formulário forem alterados
+  const handleValuesChange = (changedValues: Sheet, allValues: Sheet) => {
+    console.log("changedValues entrandooo no metodo: ");
+    const updatedValues = {
+      ...allValues,
+      realizationDate: moment(allValues.realizationDate).toDate(), // Ajuste de formato para a data
+    };
+    setJsonPreview(JSON.stringify(changedValues, null, 2));
+    console.log(JSON.stringify(updatedValues, null, 2));
+  };
+
   return (
     <Form
       form={form}
       layout="vertical"
       onFinish={handleSubmit}
+      onValuesChange={handleValuesChange}
       initialValues={{
-        notadia: 0, // Valor inicial para garantir que o formulário tenha todos os valores padrão necessários
+        dayNote: 0, // Valor inicial para garantir que o formulário tenha todos os valores padrão necessários
       }}
     >
       <Row gutter={16} style={{ marginTop: "10px" }}>
@@ -107,6 +112,12 @@ export const SheetRegisterView = () => {
           <Form.Item name="status" hidden={true}>
             <Input />
           </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={16}>
+        <Col span={8}>
+          <TodoList form={form} />
         </Col>
       </Row>
 

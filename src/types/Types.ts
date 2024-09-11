@@ -11,3 +11,10 @@ export type Pagination = {
   pageSize: number;
   totalItem: number;
 }
+
+
+export type TodoItem = {
+  id: number;
+  text: string;
+  completed: boolean;
+}
