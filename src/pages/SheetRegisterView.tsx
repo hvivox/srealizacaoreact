@@ -7,6 +7,7 @@ import moment from "moment";
 import { TitleForm } from "../components/LayoutForm/TitleForm";
 import { TodoList } from "../components/Todo/TodoList";
 import { Sheet } from "../types/Types";
+import { useAppSelector } from "../redux/hooks/useAppSelector.tsx";
 
 export const SheetRegisterView = () => {
   const [form] = Form.useForm();
@@ -14,6 +15,7 @@ export const SheetRegisterView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [jsonPreview, setJsonPreview] = useState("");
+  const todoItemList = useAppSelector((state) => state.todoListReducer);
 
   useEffect(() => {
     if (id) {
@@ -45,7 +47,8 @@ export const SheetRegisterView = () => {
     const sheetToSave = {
       ...values,
       id: Number(id), // Garantindo que o ID seja um número
-      realizationDate: moment(values.realizationDate).toDate(), // Convertendo de Moment para Date
+      realizationDate: moment(values.realizationDate).toDate(),
+      todoItemList: todoItemList,
     };
 
     // Atualizando o estado para exibir na interface
@@ -69,18 +72,18 @@ export const SheetRegisterView = () => {
 
   // Atualiza o JSON sempre que os campos do formulário forem alterados
   const handleValuesChange = (changedValues: Sheet, allValues: Sheet) => {
-    console.log("changedValues entrandooo no metodo: ");
     const updatedValues = {
       ...allValues,
       realizationDate: moment(allValues.realizationDate).toDate(), // Ajuste de formato para a data
     };
-    setJsonPreview(JSON.stringify(changedValues, null, 2));
-    console.log(JSON.stringify(updatedValues, null, 2));
+    setJsonPreview(JSON.stringify(updatedValues, null, 2));
+    console.log(JSON.stringify(changedValues, null, 2));
   };
 
   return (
     <Form
       form={form}
+      onSubmitCapture={(e) => e.preventDefault()}
       layout="vertical"
       onFinish={handleSubmit}
       onValuesChange={handleValuesChange}
@@ -114,22 +117,37 @@ export const SheetRegisterView = () => {
           </Form.Item>
         </Col>
       </Row>
-
       <Row gutter={16}>
         <Col span={8}>
-          <TodoList form={form} />
+          <TodoList form={form} todoTitle="Prioridade" />
         </Col>
+        {/*   <Col span={8}>
+          <TodoList form={form} todoTitle="Gratidão" sliceName="gratidao" />
+        </Col>
+        <Col span={8}>
+          <TodoList form={form} todoTitle="Restrição" sliceName="restricao" />
+        </Col>
+        <Col span={8}>
+          <TodoList form={form} todoTitle="Aprendizagens" sliceName="aprendizagem" />
+        </Col>
+        */}
       </Row>
 
+      {/* Botões para salvar e voltar */}
       <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Salvar
-        </Button>
-        <Button onClick={() => navigate("/sheet-list")} style={{ marginLeft: "8px" }}>
-          Voltar
-        </Button>
+        <Row gutter={16} style={{ marginTop: "4%" }}>
+          <Col span={6}>
+            <Button type="primary" htmlType="submit">
+              Salvar
+            </Button>
+          </Col>
+          <Col span={5}>
+            <Button onClick={() => navigate("/sheet-list")} style={{ marginLeft: "8px" }}>
+              Voltar
+            </Button>
+          </Col>
+        </Row>
       </Form.Item>
-
       {/* Exibindo o JSON na interface */}
       <pre>{jsonPreview}</pre>
     </Form>
