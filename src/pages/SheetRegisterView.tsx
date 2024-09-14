@@ -52,7 +52,7 @@ export const SheetRegisterView = () => {
     };
 
     // Atualizando o estado para exibir na interface
-    setJsonPreview(JSON.stringify(sheetToSave, null, 2));
+    //setJsonPreview(JSON.stringify(sheetToSave, null, 2));
 
     setIsLoading(true);
     axios
@@ -71,13 +71,17 @@ export const SheetRegisterView = () => {
   if (isLoading) return <p>Carregando...</p>;
 
   // Atualiza o JSON sempre que os campos do formulário forem alterados
-  const handleValuesChange = (changedValues: Sheet, allValues: Sheet) => {
-    const updatedValues = {
+  const handleValuesChange = (_changedValues: Sheet, allValues: Sheet) => {
+    const sheetToSave = {
       ...allValues,
-      realizationDate: moment(allValues.realizationDate).toDate(), // Ajuste de formato para a data
+      id: Number(id),
+      realizationDate: moment(allValues.realizationDate).toDate(),
+      todoItemList: todoItemList,
     };
-    setJsonPreview(JSON.stringify(updatedValues, null, 2));
-    console.log(JSON.stringify(changedValues, null, 2));
+
+    // Atualizando o estado para exibir na interface
+    setJsonPreview(JSON.stringify(sheetToSave, null, 2));
+    //console.log(JSON.stringify(changedValues, null, 2));
   };
 
   return (
@@ -119,18 +123,13 @@ export const SheetRegisterView = () => {
       </Row>
       <Row gutter={16}>
         <Col span={8}>
-          <TodoList form={form} todoTitle="Prioridade" />
-        </Col>
-        {/*   <Col span={8}>
-          <TodoList form={form} todoTitle="Gratidão" sliceName="gratidao" />
+          <TodoList form={form} todoTitle="Prioridade" fieldName="prioridade" />
+          <TodoList form={form} todoTitle="Restrição" fieldName="restricao" />
         </Col>
         <Col span={8}>
-          <TodoList form={form} todoTitle="Restrição" sliceName="restricao" />
+          <TodoList form={form} todoTitle="Aprendizagens" fieldName="aprendizagem" />
+          <TodoList form={form} todoTitle="Gratidão" fieldName="gratidao" />
         </Col>
-        <Col span={8}>
-          <TodoList form={form} todoTitle="Aprendizagens" sliceName="aprendizagem" />
-        </Col>
-        */}
       </Row>
 
       {/* Botões para salvar e voltar */}

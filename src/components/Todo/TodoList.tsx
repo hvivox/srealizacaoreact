@@ -9,31 +9,40 @@ import { useDispatch } from "react-redux";
 import { useAppSelector } from "../../redux/hooks/useAppSelector.tsx";
 
 interface TodoListProps {
-  form: FormInstance; // Adjust the type as needed
-  todoTitle: string; // The title of the todo list
+  form: FormInstance;
+  todoTitle: string;
+  fieldName: string;
 }
 
-export const TodoList: React.FC<TodoListProps> = ({ form, todoTitle }) => {
+export const TodoList: React.FC<TodoListProps> = ({ form, todoTitle, fieldName }) => {
   const [todoItem, setTodoItem] = useState("");
-  const todoItemList = useAppSelector((state) => state.todoListReducer);
+  const todoItemList = useAppSelector((state) => state.todoListReducer[fieldName]);
   const dispatch = useDispatch();
-  //const [form] = Form.useForm();
-  //const [todos, setTodos] = useState<TodoItem[]>([]);
 
-  const handleAddItem = async () => {
+  const handleAddItem = () => {
     try {
-      await form.validateFields(["task"]);
+      form.validateFields([fieldName]);
       const values = form.getFieldsValue();
-      if (values.task.trim()) {
-        const newTodo: TodoItem = {
-          id: Date.now(),
-          text: values.task,
-          completed: false,
-        };
-        dispatch(addTodo(newTodo));
-        setTodoItem("");
-        form.resetFields(["task"]);
+      const fieldValue = values[fieldName]; // Acessa o campo correto
+
+      if (!fieldValue || !fieldValue.trim()) {
+        form.setFields([
+          {
+            name: fieldName,
+            errors: ["Descreva a atividade"],
+          },
+        ]);
+        return;
       }
+
+      const newTodo: TodoItem = {
+        id: Date.now(),
+        text: fieldValue,
+        completed: false,
+      };
+      dispatch(addTodo({ sliceName: fieldName, todo: newTodo }));
+      setTodoItem("");
+      form.resetFields([fieldName]);
     } catch (errorInfo) {
       console.log("Erro de validação:", errorInfo);
     }
@@ -41,7 +50,7 @@ export const TodoList: React.FC<TodoListProps> = ({ form, todoTitle }) => {
 
   const handleKeyUp = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      e.preventDefault(); // Previne o comportamento padrão de envio de formulário
+      e.preventDefault();
       handleAddItem(); // Adiciona a tarefa ao pressionar Enter
     }
   };
@@ -52,7 +61,7 @@ export const TodoList: React.FC<TodoListProps> = ({ form, todoTitle }) => {
 
       <Row gutter={16}>
         <Col span={16}>
-          <Form.Item name="task" rules={[{ required: true, message: "Descreva a atividade" }]}>
+          <Form.Item name={fieldName}>
             <Input
               placeholder="Add a new task"
               value={todoItem}
@@ -74,10 +83,16 @@ export const TodoList: React.FC<TodoListProps> = ({ form, todoTitle }) => {
         renderItem={(todo) => (
           <List.Item
             actions={[
-              <Button icon={<DeleteOutlined />} onClick={() => dispatch(deleteTodo(todo.id))} />,
+              <Button
+                icon={<DeleteOutlined />}
+                onClick={() => dispatch(deleteTodo({ sliceName: fieldName, id: todo.id }))}
+              />,
             ]}
           >
-            <Checkbox checked={todo.completed} onChange={() => dispatch(toggleTodo(todo.id))} />
+            <Checkbox
+              checked={todo.completed}
+              onChange={() => dispatch(toggleTodo({ sliceName: fieldName, id: todo.id }))}
+            />
 
             <Typography.Text delete={todo.completed}>{todo.text}</Typography.Text>
           </List.Item>

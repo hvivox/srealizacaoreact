@@ -1,21 +1,37 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { TodoItem } from "../../types/Types";
 
+interface TodoState {
+  [key: string]: TodoItem[]; // Chave dinâmica para diferentes listas de tarefas
+}
+
+const initialState: TodoState = {};
+
 export const slice = createSlice({
   name: "todoListReducer",
-  initialState: [] as TodoItem[],
+  initialState,
   reducers: {
-    addTodo: (state, action: PayloadAction<TodoItem>) => {
-      state.push(action.payload);
+    addTodo: (state, action: PayloadAction<{ sliceName: string; todo: TodoItem }>) => {
+      // Inicializa o array se ainda não existir
+      if (!state[action.payload.sliceName]) {
+        state[action.payload.sliceName] = [];
+      }
+      state[action.payload.sliceName].push(action.payload.todo);
     },
-    toggleTodo: (state, action: PayloadAction<number>) => {
-      const todo = state.find((todo) => todo.id === action.payload);
-      if (todo) {
-        todo.completed = !todo.completed;
+    toggleTodo: (state, action: PayloadAction<{ sliceName: string; id: number }>) => {
+      const todoList = state[action.payload.sliceName];
+      if (todoList) {
+        const todo = todoList.find((todo) => todo.id === action.payload.id);
+        if (todo) {
+          todo.completed = !todo.completed;
+        }
       }
     },
-    deleteTodo: (state, action: PayloadAction<number>) => {
-      return state.filter((todo) => todo.id !== action.payload);
+    deleteTodo: (state, action: PayloadAction<{ sliceName: string; id: number }>) => {
+      const todoList = state[action.payload.sliceName];
+      if (todoList) {
+        state[action.payload.sliceName] = todoList.filter((todo) => todo.id !== action.payload.id);
+      }
     },
   },
 });
