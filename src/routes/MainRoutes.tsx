@@ -1,20 +1,19 @@
 import { Route, Routes } from "react-router-dom";
 import { HomeView } from "../pages/HomeView.tsx";
 import { About } from "../pages/About/About.tsx";
-import { ExemplosComponent } from "../pages/ExemplesComponentView.tsx";
+
 import { NotFoundView } from "../pages/NotFoundView.tsx";
-import { ListaFolhaView } from "../pages/ListaFolhaView.tsx";
-import { CadastroFolhaView } from "../pages/CadastroFolhaView.tsx";
+import { SheetListView } from "../pages/SheetListView.tsx";
+import { SheetRegisterView } from "../pages/SheetRegisterView.tsx";
 
 export const MainRoutes = () => {
   return (
     <div>
       <Routes>
         <Route path="/" element={<HomeView />} />
-        <Route path="/lista-folha" element={<ListaFolhaView />} />
-        <Route path="/editar/:id" element={<CadastroFolhaView />} />
+        <Route path="/sheet-list" element={<SheetListView />} />
+        <Route path="/edit/:id" element={<SheetRegisterView />} />
         <Route path="/about" element={<About />} />
-        <Route path="/exemple" element={<ExemplosComponent />} />
         <Route path="*" element={<NotFoundView />} />
       </Routes>
     </div>

@@ -5,23 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setName } from "../redux/reducers/useReducer";
 import { useAppSelector } from "../redux/hooks/useAppSelector";
-interface Folha {
-  id: number;
-  foco: string;
-  dtarealizacao: Date;
-  notadia: number;
-  //acoes?: any; // Adicione os tipos apropriados se tiver uma estrutura definida para ações
-}
+import { Pagination, Sheet } from "../types/Types";
 
-interface Pagination {
-  current: number;
-  pageSize: number;
-  totalItem: number;
-}
-
-export const ListaFolhaView = () => {
-  const [listaEntidade, setListaEntidade] = useState<Folha[]>([]);
-  const [isErroResposta, setIsErroResposta] = useState(false);
+export const SheetListView = () => {
+  const [entityList, setEntityList] = useState<Sheet[]>([]);
+  const [isResponseError, setIsResponseError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -35,16 +23,16 @@ export const ListaFolhaView = () => {
   });
 
   useEffect(() => {
-    consultaFolhaList(pagination.current - 1, pagination.pageSize);
+    sheetConsultList(pagination.current - 1, pagination.pageSize);
   }, [pagination.current, pagination.pageSize, pagination.totalItem]);
 
-  const consultaFolhaList = async (page = 0, pageSize = 3) => {
-    const url = `http://localhost:8080/folhas?size=${pageSize}&page=${page}&sort=id,asc&status=true`;
+  const sheetConsultList = async (page = 0, pageSize = 3) => {
+    const url = `http://localhost:8080/sheets?size=${pageSize}&page=${page}&sort=id,asc&status=true`;
 
     await axios
       .get(url)
       .then((response) => {
-        setListaEntidade(response.data.content as Folha[]);
+        setEntityList(response.data.content as Sheet[]);
 
         setPagination((pagination) => ({
           ...pagination,
@@ -54,7 +42,7 @@ export const ListaFolhaView = () => {
         }));
       })
       .catch((error) => {
-        setIsErroResposta(isErroResposta);
+        setIsResponseError(isResponseError);
         console.log(error);
       })
       .finally(() => {
@@ -62,10 +50,10 @@ export const ListaFolhaView = () => {
       });
   };
 
-  const inativarItem = (record: Folha) => {
+  const inactiveItem = (record: Sheet) => {
     setIsLoading(true);
-    const idExcluido = record.id;
-    const url = "http://localhost:8080/folhas/" + idExcluido;
+    const removeId = record.id;
+    const url = "http://localhost:8080/sheets/" + removeId;
     const data = {
       STATUS: 0,
     };
@@ -74,14 +62,14 @@ export const ListaFolhaView = () => {
       .patch(url, data)
       .then((response) => {
         // Removendo o registro inativado do estado
-        setListaEntidade((prevLista) => prevLista.filter((item) => item.id !== record.id));
+        setEntityList((prevList) => prevList.filter((item) => item.id !== record.id));
 
         // Aqui você pode mostrar uma notificação de sucesso. No entanto, o código original usava a biblioteca de notificação do Vue.
         // Se você estiver usando alguma biblioteca de notificação no React, pode invocar aqui.
-        console.log(response.data.mensagem);
+        console.log(response.data.message());
       })
       .catch((error) => {
-        setIsErroResposta(true);
+        setIsResponseError(true);
         console.log(error);
       })
       .finally(() => {
@@ -89,19 +77,19 @@ export const ListaFolhaView = () => {
       });
   };
 
-  const handleEdit = (record: Folha) => {
-    navigate(`/editar/${record.id}`);
+  const handleEdit = (record: Sheet) => {
+    navigate(`/edit/${record.id}`);
     console.log("Editando:", record);
     // Aqui você pode navegar para a tela de edição ou abrir um modal de edição
   };
 
-  const handleInactivate = (record: Folha) => {
+  const handleInactivate = (record: Sheet) => {
     // console.log("Inativando:", record);
     showConfirm(record);
     // Aqui você pode fazer a chamada API para inativar o registro ou abrir uma confirmação
   };
 
-  function showConfirm(record: Folha) {
+  function showConfirm(record: Sheet) {
     Modal.confirm({
       title: `Deseja inativar o item ${record.id}?`,
       content: "Ao inativar este item, ele não estará mais disponível.",
@@ -109,8 +97,7 @@ export const ListaFolhaView = () => {
       okType: "danger",
       cancelText: "Não",
       onOk() {
-        inativarItem(record);
-        console.log(`Item ${record.id} inativado`);
+        inactiveItem(record);
       },
       onCancel() {
         console.log("Ação cancelada");
@@ -118,38 +105,33 @@ export const ListaFolhaView = () => {
     });
   }
 
-  // LISTA A CONSULTA AO RENDENIZAR A TELA
-  /* useEffect(() => {
-    consultaFolhaList();
-  }, []);*/
-
   const columns = [
     {
       title: "id",
       dataIndex: "id",
       key: "id",
-      sorter: (a: Folha, b: Folha) => a.id - b.id,
+      sorter: (a: Sheet, b: Sheet) => a.id - b.id,
     },
     {
       title: "Foco ",
-      dataIndex: "foco",
-      key: "foco",
+      dataIndex: "focus",
+      key: "focus",
     },
     {
       title: "Data Entrega",
-      dataIndex: "dtarealizacao",
-      key: "dtarealizacao",
+      dataIndex: "realizationDate",
+      key: "realizationDate",
     },
 
     {
       title: "Nota",
-      dataIndex: "notadia",
-      key: "notadia",
+      dataIndex: "dayNote",
+      key: "dayNote",
     },
     {
       title: "Ações",
-      key: "acoes",
-      render: (value: string, record: Folha) => (
+      key: "action",
+      render: (_value: string, record: Sheet) => (
         <span>
           <button onClick={() => handleEdit(record)}>Editar</button>
           <button onClick={() => handleInactivate(record)} style={{ marginLeft: "10px" }}>
@@ -169,7 +151,7 @@ export const ListaFolhaView = () => {
       <input type="text" value={user.name} onChange={handleNameInput}></input>
       <hr></hr>
       <Table
-        dataSource={listaEntidade}
+        dataSource={entityList}
         columns={columns}
         rowKey={"id"}
         pagination={{
@@ -178,7 +160,7 @@ export const ListaFolhaView = () => {
           total: pagination.totalItem,
           onChange: (page, pageSize) => {
             setPagination({ ...pagination, current: page, pageSize });
-            // consultaFolhaList(page - 1, pageSize); // Atualize isso para buscar dados conforme a página muda
+            // sheetConsultList(page - 1, pageSize); // Atualize isso para buscar dados conforme a página muda
           },
           showSizeChanger: true,
           pageSizeOptions: ["10", "20", "30", "50"],

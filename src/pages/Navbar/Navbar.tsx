@@ -21,11 +21,9 @@ export const Navbar = () => {
         >
           <Title style={{ fontSize: "18px" }}>Realização</Title>
         </Menu.Item>
-        <Menu.Item key="exemple">
-          <Link to="/exemple">Exemplos de Componentes</Link>
-        </Menu.Item>
-        <Menu.Item key="lista-folha">
-          <Link to="/lista-folha">Lista Folha</Link>
+
+        <Menu.Item key="sheet-list">
+          <Link to="/sheet-list">Lista Folha</Link>
         </Menu.Item>
         <Menu.Item key="about">
           <Link to="/about">Sobre..</Link>

@@ -7,9 +7,6 @@ export const About = () => {
         <li>
           <Link to="/about/aboutList">Lista</Link>
         </li>
-        <li>
-          <Link to="/about/cadastro">Cadastro</Link>
-        </li>
       </ul>
     </div>
   );
