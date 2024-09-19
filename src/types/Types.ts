@@ -3,7 +3,8 @@ export type Sheet ={
   id: number;
   focus: string;
   realizationDate: Date;
-  dayNote: number; 
+  dayNote: number;
+  status: number;
   todoItemList: TodoItem[];
 }
 
@@ -15,7 +16,7 @@ export type Pagination = {
 
 
 export type TodoItem = {
-  id: number;
-  text: string;
-  completed: boolean;
+  order: number;
+  description: string;
+  isCompleted: boolean;
 }
