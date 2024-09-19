@@ -1,21 +1,19 @@
-import { Table, Modal } from "antd";
+import { Table, Modal, Row, Col, Button, Input } from "antd";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setName } from "../redux/reducers/useReducer";
-import { useAppSelector } from "../redux/hooks/useAppSelector";
 import { Pagination, Sheet } from "../types/Types";
+import { TitleForm } from "../components/LayoutForm/TitleForm";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 export const SheetListView = () => {
   const [entityList, setEntityList] = useState<Sheet[]>([]);
+
   const [isResponseError, setIsResponseError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-  const dispatch = useDispatch();
-  const user = useAppSelector((state) => state.user);
-
+  const [filteredEntityList, setFilteredEntityList] = useState<Sheet[]>([]);
+  const [searchValue, setSearchValue] = useState("");
   const [pagination, setPagination] = useState<Pagination>({
     current: 1,
     pageSize: 10,
@@ -26,8 +24,12 @@ export const SheetListView = () => {
     sheetConsultList(pagination.current - 1, pagination.pageSize);
   }, [pagination.current, pagination.pageSize, pagination.totalItem]);
 
+  useEffect(() => {
+    filterList(searchValue);
+  }, [searchValue, entityList]);
+
   const sheetConsultList = async (page = 0, pageSize = 3) => {
-    const url = `http://localhost:8080/sheets?size=${pageSize}&page=${page}&sort=id,asc&status=true`;
+    const url = `http://localhost:8080/sheets?size=${pageSize}&page=${page}&sort=id,desc&status=true`;
 
     await axios
       .get(url)
@@ -78,7 +80,7 @@ export const SheetListView = () => {
   };
 
   const handleEdit = (record: Sheet) => {
-    navigate(`/edit/${record.id}`);
+    navigate(`/sheet/edit/${record.id}`);
     console.log("Editando:", record);
     // Aqui você pode navegar para a tela de edição ou abrir um modal de edição
   };
@@ -105,6 +107,17 @@ export const SheetListView = () => {
     });
   }
 
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+  };
+
+  const filterList = (searchValue: string) => {
+    const filteredList = entityList.filter((item) =>
+      item.focus.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setFilteredEntityList(filteredList);
+  };
+
   const columns = [
     {
       title: "id",
@@ -121,6 +134,7 @@ export const SheetListView = () => {
       title: "Data Entrega",
       dataIndex: "realizationDate",
       key: "realizationDate",
+      render: (date: Date) => new Date(date).toLocaleDateString("pt-BR"),
     },
 
     {
@@ -133,25 +147,45 @@ export const SheetListView = () => {
       key: "action",
       render: (_value: string, record: Sheet) => (
         <span>
-          <button onClick={() => handleEdit(record)}>Editar</button>
-          <button onClick={() => handleInactivate(record)} style={{ marginLeft: "10px" }}>
-            Inativar
-          </button>
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+            style={{ color: "#1890ff" }} // Cor do ícone de edição
+          />
+          <Button
+            icon={<DeleteOutlined />}
+            onClick={() => handleInactivate(record)}
+            style={{ color: "red", marginLeft: "10px" }} // Cor do ícone de inativação
+          />
         </span>
       ),
     },
   ];
 
-  const handleNameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setName(e.target.value));
-  };
-
   return (
     <div>
-      <input type="text" value={user.name} onChange={handleNameInput}></input>
-      <hr></hr>
+      <Row>
+        <Col span={8}>
+          <TitleForm>Lista Folha</TitleForm>
+        </Col>
+      </Row>
+      <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+        <Col span={16}>
+          <Input.Search
+            placeholder="Buscar"
+            onSearch={handleSearch}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </Col>
+        <Col>
+          <Button type="primary" onClick={() => navigate("/sheet/register")}>
+            Novo
+          </Button>
+        </Col>
+      </Row>
+
       <Table
-        dataSource={entityList}
+        dataSource={filteredEntityList}
         columns={columns}
         rowKey={"id"}
         pagination={{

@@ -12,7 +12,8 @@ export const MainRoutes = () => {
       <Routes>
         <Route path="/" element={<HomeView />} />
         <Route path="/sheet-list" element={<SheetListView />} />
-        <Route path="/edit/:id" element={<SheetRegisterView />} />
+        <Route path="/sheet/register" element={<SheetRegisterView />} />
+        <Route path="/sheet/edit/:id" element={<SheetRegisterView />} />
         <Route path="/about" element={<About />} />
         <Route path="*" element={<NotFoundView />} />
       </Routes>

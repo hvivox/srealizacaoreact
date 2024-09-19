@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Input, Button, List, Typography, Checkbox, Form, Row } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import Col from "antd/es/grid/col";
 import { TodoItem } from "../../types/Types";
 import { FormInstance } from "antd/es/form/Form";
@@ -12,11 +12,17 @@ interface TodoListProps {
   form: FormInstance;
   todoTitle: string;
   fieldName: string;
+  sliceAndListName: string;
 }
 
-export const TodoList: React.FC<TodoListProps> = ({ form, todoTitle, fieldName }) => {
+export const TodoList: React.FC<TodoListProps> = ({
+  form,
+  todoTitle,
+  fieldName,
+  sliceAndListName,
+}) => {
   const [todoItem, setTodoItem] = useState("");
-  const todoItemList = useAppSelector((state) => state.todoListReducer[fieldName]);
+  const todoItemList = useAppSelector((state) => state.todoListReducer[sliceAndListName]);
   const dispatch = useDispatch();
 
   const handleAddItem = () => {
@@ -35,12 +41,16 @@ export const TodoList: React.FC<TodoListProps> = ({ form, todoTitle, fieldName }
         return;
       }
 
+      // Calcular a ordem com base no comprimento atual da lista
+      const lastItem = todoItemList?.length;
+      const order = lastItem ? lastItem + 1 : 1;
+
       const newTodo: TodoItem = {
-        id: Date.now(),
-        text: fieldValue,
-        completed: false,
+        order: order,
+        description: fieldValue,
+        isCompleted: false,
       };
-      dispatch(addTodo({ sliceName: fieldName, todo: newTodo }));
+      dispatch(addTodo({ sliceName: sliceAndListName, todo: newTodo }));
       setTodoItem("");
       form.resetFields([fieldName]);
     } catch (errorInfo) {
@@ -63,7 +73,7 @@ export const TodoList: React.FC<TodoListProps> = ({ form, todoTitle, fieldName }
         <Col span={16}>
           <Form.Item name={fieldName}>
             <Input
-              placeholder="Add a new task"
+              placeholder="Digite a tarefa"
               value={todoItem}
               onChange={(e) => setTodoItem(e.target.value)}
               onKeyUp={handleKeyUp}
@@ -72,32 +82,39 @@ export const TodoList: React.FC<TodoListProps> = ({ form, todoTitle, fieldName }
         </Col>
         <Col>
           <Button type="primary" onClick={() => handleAddItem()}>
-            + Add Task
+            <PlusOutlined />
           </Button>
         </Col>
       </Row>
 
-      <List
-        bordered
-        dataSource={todoItemList}
-        renderItem={(todo) => (
-          <List.Item
-            actions={[
-              <Button
-                icon={<DeleteOutlined />}
-                onClick={() => dispatch(deleteTodo({ sliceName: fieldName, id: todo.id }))}
-              />,
-            ]}
-          >
-            <Checkbox
-              checked={todo.completed}
-              onChange={() => dispatch(toggleTodo({ sliceName: fieldName, id: todo.id }))}
-            />
+      <div style={{ maxHeight: "260px", overflowY: "auto" }}>
+        <List
+          bordered={true}
+          dataSource={todoItemList}
+          renderItem={(todo) => (
+            <List.Item
+              key={todo.order}
+              actions={[
+                <Button
+                  icon={<DeleteOutlined />}
+                  onClick={() =>
+                    dispatch(deleteTodo({ sliceName: sliceAndListName, order: todo.order }))
+                  }
+                />,
+              ]}
+            >
+              <Checkbox
+                checked={todo.isCompleted}
+                onChange={() =>
+                  dispatch(toggleTodo({ sliceName: sliceAndListName, order: todo.order }))
+                }
+              />
 
-            <Typography.Text delete={todo.completed}>{todo.text}</Typography.Text>
-          </List.Item>
-        )}
-      />
+              <Typography.Text delete={todo.isCompleted}>{todo.description}</Typography.Text>
+            </List.Item>
+          )}
+        />
+      </div>
     </div>
   );
 };

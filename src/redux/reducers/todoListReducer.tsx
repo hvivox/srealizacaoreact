@@ -18,23 +18,30 @@ export const slice = createSlice({
       }
       state[action.payload.sliceName].push(action.payload.todo);
     },
-    toggleTodo: (state, action: PayloadAction<{ sliceName: string; id: number }>) => {
+
+    setTodoList: (state, action: PayloadAction<{ sliceName: string; todoList: TodoItem[] }>) => {
+      state[action.payload.sliceName] = action.payload.todoList;
+    },
+
+    toggleTodo: (state, action: PayloadAction<{ sliceName: string; order: number }>) => {
       const todoList = state[action.payload.sliceName];
       if (todoList) {
-        const todo = todoList.find((todo) => todo.id === action.payload.id);
+        const todo = todoList.find((todo) => todo.order === action.payload.order);
         if (todo) {
-          todo.completed = !todo.completed;
+          todo.isCompleted = !todo.isCompleted;
         }
       }
     },
-    deleteTodo: (state, action: PayloadAction<{ sliceName: string; id: number }>) => {
+    deleteTodo: (state, action: PayloadAction<{ sliceName: string; order: number }>) => {
       const todoList = state[action.payload.sliceName];
       if (todoList) {
-        state[action.payload.sliceName] = todoList.filter((todo) => todo.id !== action.payload.id);
+        state[action.payload.sliceName] = todoList.filter(
+          (todo) => todo.order !== action.payload.order
+        );
       }
     },
   },
 });
 
-export const { addTodo, toggleTodo, deleteTodo } = slice.actions;
+export const { addTodo, setTodoList, toggleTodo, deleteTodo } = slice.actions;
 export default slice.reducer;
