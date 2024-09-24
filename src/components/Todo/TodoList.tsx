@@ -15,12 +15,7 @@ interface TodoListProps {
   sliceAndListName: string;
 }
 
-export const TodoList: React.FC<TodoListProps> = ({
-  form,
-  todoTitle,
-  fieldName,
-  sliceAndListName,
-}) => {
+export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoListProps) => {
   const [todoItem, setTodoItem] = useState("");
   const todoItemList = useAppSelector((state) => state.todoListReducer[sliceAndListName]);
   const dispatch = useDispatch();
