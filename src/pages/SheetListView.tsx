@@ -22,10 +22,12 @@ export const SheetListView = () => {
 
   useEffect(() => {
     sheetConsultList(pagination.current - 1, pagination.pageSize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current, pagination.pageSize, pagination.totalItem]);
 
   useEffect(() => {
     filterList(searchValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue, entityList]);
 
   const sheetConsultList = async (page = 0, pageSize = 3) => {
@@ -66,7 +68,6 @@ export const SheetListView = () => {
         // Removendo o registro inativado do estado
         setEntityList((prevList) => prevList.filter((item) => item.id !== record.id));
 
-        // Aqui você pode mostrar uma notificação de sucesso. No entanto, o código original usava a biblioteca de notificação do Vue.
         // Se você estiver usando alguma biblioteca de notificação no React, pode invocar aqui.
         console.log(response.data.message());
       })

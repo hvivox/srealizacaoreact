@@ -65,6 +65,7 @@ export const SheetRegisterView = () => {
 
       form.setFieldsValue({ status: true }); // Defina aqui o valor padrão do status ao criar registro
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, form]);
 
   const handleSubmit = (values: Sheet) => {
