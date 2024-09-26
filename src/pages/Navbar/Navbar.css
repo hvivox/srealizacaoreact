@@ -1,0 +1,31 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-menu {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.navbar-user {
+    margin-left: auto;
+}
+
+.navbar-menu .ant-menu-item a,
+.navbar-menu .ant-menu-submenu-title {
+    text-decoration: none;
+}
+
+.navbar-menu .ant-menu-item a:hover,
+.navbar-menu .ant-menu-submenu-title:hover {
+    text-decoration: none;
+}
