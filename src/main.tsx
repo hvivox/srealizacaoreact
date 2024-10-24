@@ -8,9 +8,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./redux/store.tsx";
 
-// Configurar o elemento raiz do aplicativo para acessibilidade
-Modal.setAppElement("#root"); // Certifique-se de que "#root" corresponda ao ID do elemento raiz do seu aplicativo
-
+Modal.setAppElement("#root");
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>

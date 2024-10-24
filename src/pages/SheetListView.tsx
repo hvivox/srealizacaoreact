@@ -5,9 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { Pagination, Sheet } from "../types/Types";
 import { TitleForm } from "../components/LayoutForm/TitleForm";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { useAuth } from "../contexto/AuthProvider";
 
 export const SheetListView = () => {
   const [entityList, setEntityList] = useState<Sheet[]>([]);
+  const { token } = useAuth();
 
   const [isResponseError, setIsResponseError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,9 +34,14 @@ export const SheetListView = () => {
 
   const sheetConsultList = async (page = 0, pageSize = 3) => {
     const url = `http://localhost:8080/sheets?size=${pageSize}&page=${page}&sort=id,desc&status=true`;
+    const tokenHeader = token;
 
     await axios
-      .get(url)
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${tokenHeader}`,
+        },
+      })
       .then((response) => {
         setEntityList(response.data.content as Sheet[]);
 

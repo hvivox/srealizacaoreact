@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
+import KeycloakSingleton from "./Keycloak";
 
-// Definindo a interface para o contexto de autenticação
 interface AuthContextType {
   token: string | null;
   cpfLogado: string | null;
@@ -11,12 +11,16 @@ interface AuthContextType {
   logOut: () => void;
 }
 
-// Definindo a interface para as props do AuthProvider
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Criando o contexto de autenticação com valores padrão
+interface DecodedToken {
+  cpf: string;
+  given_name: string;
+  exp: number;
+}
+
 const AuthContext = createContext<AuthContextType>({
   token: null,
   cpfLogado: null,
@@ -25,86 +29,88 @@ const AuthContext = createContext<AuthContextType>({
   logOut: () => {},
 });
 
-interface DecodedToken {
-  cpf: string;
-  given_name: string;
-  exp: number;
-}
-
-// Hook para usar o contexto de autenticação
 export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const token_key = "__token";
   const cpf_key = "__cpf";
   const navigate = useNavigate();
+  const isInitialized = useRef(false); // Use useRef para controlar o estado de inicialização
 
-  const [cpfLogado, setcpfLogado] = useState<string | null>(() => {
-    const storedCpf = localStorage.getItem(cpf_key);
-    return storedCpf ? storedCpf : null;
-  });
-
-  const [token, setToken] = useState<string | null>(() => {
-    const storedToken = localStorage.getItem(token_key);
-    return storedToken ? storedToken : null;
-  });
-
+  const [cpfLogado, setcpfLogado] = useState<string | null>(() => localStorage.getItem(cpf_key));
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem(token_key));
   const [nomeLogado, setNomeLogado] = useState<string>("");
+  const keycloak = KeycloakSingleton.getInstance();
 
   useEffect(() => {
-    if (token) {
-      try {
-        const decodedToken: DecodedToken = jwtDecode(token);
-        setcpfLogado(decodedToken.cpf);
-        setNomeLogado(decodedToken.given_name);
-        // Agendar logout para quando o token expirar
-        scheduleTokenExpiry(decodedToken.exp);
-      } catch (error) {
-        console.error("Error decoding token:", error);
-        handleLogOut();
-      }
+    if (!isInitialized.current && keycloak) {
+      isInitialized.current = true;
+
+      keycloak
+        .init({ onLoad: "login-required" })
+        .then((authenticated) => {
+          if (authenticated) {
+            setToken(keycloak.token!);
+            sessionStorage.setItem(token_key, keycloak.token!);
+
+            const decodedToken: DecodedToken = keycloak.tokenParsed as DecodedToken;
+            setcpfLogado(decodedToken.cpf);
+            setNomeLogado(decodedToken.given_name);
+            sessionStorage.setItem(cpf_key, decodedToken.cpf);
+          }
+        })
+        .catch((error) => {
+          console.error("Erro ao tentar logar", error);
+          isInitialized.current = false;
+          handleLogOut();
+        });
     }
-  }, [token]);
+
+    const refreshTokenInterval = setInterval(() => {
+      keycloak
+        .updateToken(30)
+        .then((refreshed) => {
+          if (refreshed) {
+            setToken(keycloak.token!);
+            sessionStorage.setItem(token_key, keycloak.token!);
+          } else {
+            console.warn(
+              "Token not refreshed. Valid for " +
+                Math.round(
+                  (keycloak.tokenParsed?.exp ?? 0) +
+                    (keycloak.timeSkew ?? 0) -
+                    new Date().getTime() / 1000
+                ) +
+                " seconds"
+            );
+          }
+        })
+        .catch(() => {
+          console.error("Failed to refresh token");
+          handleLogOut();
+        });
+    }, 60000);
+
+    return () => clearInterval(refreshTokenInterval);
+  }, [keycloak, navigate]);
 
   const handleSetToken = (newToken: { access_token: string }) => {
     const tokenValue = newToken.access_token;
     setToken(tokenValue);
-    if (newToken) {
-      localStorage.setItem(token_key, tokenValue);
-    } else {
-      localStorage.removeItem(token_key);
-    }
+    localStorage.setItem(token_key, tokenValue);
 
     const decodedToken: DecodedToken = jwtDecode<DecodedToken>(tokenValue);
     setcpfLogado(decodedToken.cpf);
-    if (decodedToken.cpf) {
-      localStorage.setItem(cpf_key, decodedToken.cpf);
-    } else {
-      localStorage.removeItem(cpf_key);
-    }
-  };
-
-  // Função para realizar o logout automaticamente quando o token expirar
-  const scheduleTokenExpiry = (expiresAt: number) => {
-    const currentTime = Date.now();
-    const timeUntilExpiry = expiresAt * 1000 - currentTime;
-
-    if (timeUntilExpiry > 0) {
-      setTimeout(() => {
-        handleLogOut();
-      }, timeUntilExpiry);
-    } else {
-      handleLogOut();
-    }
+    localStorage.setItem(cpf_key, decodedToken.cpf);
   };
 
   const handleLogOut = () => {
     setToken(null);
-    setcpfLogado(null); // Clear CPF on logout
+    setcpfLogado(null);
     setNomeLogado("");
     localStorage.removeItem(token_key);
     localStorage.removeItem(cpf_key);
-    navigate("/");
+    keycloak.logout({ redirectUri: window.location.origin });
   };
 
   return (

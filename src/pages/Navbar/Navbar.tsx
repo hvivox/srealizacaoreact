@@ -11,8 +11,40 @@ const { Title } = Typography;
 
 export const Navbar: React.FC = () => {
   const user = useAppSelector((state) => state.user);
-
   const { logOut } = useAuth();
+
+  const items = [
+    {
+      key: "home",
+      label: <Link to="/">Home</Link>,
+    },
+    {
+      key: "sheet-list",
+      label: <Link to="/sheet-list">Lista Folha</Link>,
+    },
+    {
+      key: "about",
+      label: <Link to="/about">Sobre</Link>,
+    },
+    {
+      key: "user",
+      label: user.name,
+      icon: <UserOutlined />,
+      style: { marginLeft: "auto" }, // Move este item para a direita
+      children: [
+        {
+          key: "profile",
+          label: <Link to="/profile">Perfil</Link>,
+        },
+        {
+          key: "logout",
+          icon: <LogoutOutlined />,
+          label: "Sair",
+          onClick: logOut, // Chama o logout ao clicar no item
+        },
+      ],
+    },
+  ];
 
   return (
     <Header className="navbar">
@@ -21,25 +53,7 @@ export const Navbar: React.FC = () => {
           Realização
         </Title>
       </div>
-      <Menu theme="dark" mode="horizontal" className="navbar-menu">
-        <Menu.Item key="home">
-          <Link to="/">Home</Link>
-        </Menu.Item>
-        <Menu.Item key="sheet-list">
-          <Link to="/sheet-list">Lista Folha</Link>
-        </Menu.Item>
-        <Menu.Item key="about">
-          <Link to="/about">Sobre</Link>
-        </Menu.Item>
-        <Menu.SubMenu key="user" title={user.name} icon={<UserOutlined />} className="navbar-user">
-          <Menu.Item key="profile">
-            <Link to="/profile">Perfil</Link>
-          </Menu.Item>
-          <Menu.Item key="logout" icon={<LogoutOutlined />}>
-            <button onClick={logOut}>Sair</button>
-          </Menu.Item>
-        </Menu.SubMenu>
-      </Menu>
+      <Menu theme="dark" mode="horizontal" className="navbar-menu" items={items} />
     </Header>
   );
 };
