@@ -4,7 +4,7 @@ import { Menu, Typography, Layout } from "antd";
 import { useAppSelector } from "../../redux/hooks/useAppSelector";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import "./Navbar.css";
-import { useAuth } from "../../contexto/AuthProvider";
+import { useAuth } from "../../hooks/useAuth"; // Importa o hook useAuth do contexto
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -48,12 +48,14 @@ export const Navbar: React.FC = () => {
 
   return (
     <Header className="navbar">
-      <div className="navbar-brand">
-        <Title level={3} style={{ color: "white", margin: 0 }}>
-          Realização
-        </Title>
+      <div className="navbar-content">
+        <div className="navbar-brand">
+          <Title level={3} style={{ color: "white", margin: 8 }}>
+            Realização
+          </Title>
+        </div>
+        <Menu theme="dark" mode="horizontal" className="navbar-menu" items={items} />
       </div>
-      <Menu theme="dark" mode="horizontal" className="navbar-menu" items={items} />
     </Header>
   );
 };

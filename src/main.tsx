@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js"; // Importe os scripts JavaScript do Bootstrap conforme necessário
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Modal from "react-modal";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";

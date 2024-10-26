@@ -1,9 +1,9 @@
 import Keycloak from "keycloak-js";
 
 const keycloakParams = {
-  url: 'http://localhost:8082/auth',
-  realm: 'SREALIZACAO_REALM',
-  clientId: 'SREALIZACAO_CLIENT'
+  url: import.meta.env.VITE_KEYCLOAK_URL!,
+  realm: import.meta.env.VITE_KEYCLOAK_REALM!,
+  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID!,
 };
 
 class KeycloakSingleton {

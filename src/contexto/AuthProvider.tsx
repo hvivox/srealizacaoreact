@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
+import React, { createContext, useEffect, useState, useRef, ReactNode, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import KeycloakSingleton from "./Keycloak";
+import { CPF_KEY, TOKEN_KEY } from "../types/Constantes";
 
 interface AuthContextType {
   token: string | null;
@@ -20,8 +21,8 @@ interface DecodedToken {
   given_name: string;
   exp: number;
 }
-
-const AuthContext = createContext<AuthContextType>({
+// contexto pode ser compartilhado e acessado por qualquer componente filho
+export const AuthContext = createContext<AuthContextType>({
   token: null,
   cpfLogado: null,
   nomeLogado: "",
@@ -29,18 +30,23 @@ const AuthContext = createContext<AuthContextType>({
   logOut: () => {},
 });
 
-export const useAuth = () => useContext(AuthContext);
-
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const token_key = "__token";
-  const cpf_key = "__cpf";
   const navigate = useNavigate();
   const isInitialized = useRef(false); // Use useRef para controlar o estado de inicialização
 
-  const [cpfLogado, setcpfLogado] = useState<string | null>(() => localStorage.getItem(cpf_key));
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(token_key));
+  const [cpfLogado, setcpfLogado] = useState<string | null>(() => localStorage.getItem(CPF_KEY));
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
   const [nomeLogado, setNomeLogado] = useState<string>("");
   const keycloak = KeycloakSingleton.getInstance();
+
+  const handleLogOut = useCallback(() => {
+    setToken(null);
+    setcpfLogado(null); // Clear CPF on logout
+    setNomeLogado("");
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(CPF_KEY);
+    keycloak.logout({ redirectUri: window.location.origin });
+  }, [keycloak]);
 
   useEffect(() => {
     if (!isInitialized.current && keycloak) {
@@ -51,12 +57,12 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .then((authenticated) => {
           if (authenticated) {
             setToken(keycloak.token!);
-            sessionStorage.setItem(token_key, keycloak.token!);
+            sessionStorage.setItem(TOKEN_KEY, keycloak.token!);
 
             const decodedToken: DecodedToken = keycloak.tokenParsed as DecodedToken;
             setcpfLogado(decodedToken.cpf);
             setNomeLogado(decodedToken.given_name);
-            sessionStorage.setItem(cpf_key, decodedToken.cpf);
+            sessionStorage.setItem(CPF_KEY, decodedToken.cpf);
           }
         })
         .catch((error) => {
@@ -72,7 +78,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .then((refreshed) => {
           if (refreshed) {
             setToken(keycloak.token!);
-            sessionStorage.setItem(token_key, keycloak.token!);
+            sessionStorage.setItem(TOKEN_KEY, keycloak.token!);
           } else {
             console.warn(
               "Token not refreshed. Valid for " +
@@ -92,25 +98,16 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }, 60000);
 
     return () => clearInterval(refreshTokenInterval);
-  }, [keycloak, navigate]);
+  }, [keycloak, navigate, handleLogOut]);
 
   const handleSetToken = (newToken: { access_token: string }) => {
     const tokenValue = newToken.access_token;
     setToken(tokenValue);
-    localStorage.setItem(token_key, tokenValue);
+    localStorage.setItem(TOKEN_KEY, tokenValue);
 
     const decodedToken: DecodedToken = jwtDecode<DecodedToken>(tokenValue);
     setcpfLogado(decodedToken.cpf);
-    localStorage.setItem(cpf_key, decodedToken.cpf);
-  };
-
-  const handleLogOut = () => {
-    setToken(null);
-    setcpfLogado(null);
-    setNomeLogado("");
-    localStorage.removeItem(token_key);
-    localStorage.removeItem(cpf_key);
-    keycloak.logout({ redirectUri: window.location.origin });
+    localStorage.setItem(CPF_KEY, decodedToken.cpf);
   };
 
   return (

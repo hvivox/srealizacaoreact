@@ -5,6 +5,16 @@
     padding: 0 20px;
 }
 
+.navbar-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    /* Faz com que o conteúdo ocupe toda a largura */
+    justify-content: space-between;
+    /* Distribui brand e menu */
+    padding: 0 20px;
+}
+
 .navbar-brand {
     display: flex;
     align-items: center;

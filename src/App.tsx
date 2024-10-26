@@ -3,20 +3,25 @@ import { MainRoutes } from "./routes/MainRoutes";
 import "antd/dist/antd.css";
 import { Navbar } from "./pages/Navbar/Navbar";
 import useApiInterceptors from "./hooks/useApiInterceptors";
-import AuthProvider, { useAuth } from "./contexto/AuthProvider";
+import AuthProvider from "./contexto/AuthProvider";
+import { useAuth } from "./hooks/useAuth";
 
 const AppContent: React.FC = () => {
   const { token } = useAuth();
 
   return (
     <div className="App">
-      <Navbar />
-      <div className="container">
-        <div>
-          <MainRoutes />
-        </div>
-        {token && <footer>Todos os direitos reservados</footer>}
-      </div>
+      {token && (
+        <>
+          <Navbar />
+          <div className="container">
+            <div>
+              <MainRoutes />
+            </div>
+            <footer>Todos os direitos reservados</footer>
+          </div>
+        </>
+      )}
     </div>
   );
 };
