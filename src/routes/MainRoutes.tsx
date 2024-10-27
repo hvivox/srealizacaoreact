@@ -5,7 +5,6 @@ import { About } from "../pages/About/About.tsx";
 import { NotFoundView } from "../pages/NotFoundView.tsx";
 import { SheetListView } from "../pages/SheetListView.tsx";
 import { SheetRegisterView } from "../pages/SheetRegisterView.tsx";
-
 export const MainRoutes = () => {
   return (
     <div>
