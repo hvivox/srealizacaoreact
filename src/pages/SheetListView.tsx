@@ -1,16 +1,17 @@
 import { Table, Modal, Row, Col, Button, Input } from "antd";
-import axios from "axios";
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pagination, Sheet } from "../types/Types";
 import { TitleForm } from "../components/LayoutForm/TitleForm";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useAuth } from "../hooks/useAuth";
+import { api } from "../services/api";
 
 export const SheetListView = () => {
   const [entityList, setEntityList] = useState<Sheet[]>([]);
   const { token } = useAuth();
-
+  const tokenHeader = token;
   const [isResponseError, setIsResponseError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -33,10 +34,9 @@ export const SheetListView = () => {
   }, [searchValue, entityList]);
 
   const sheetConsultList = async (page = 0, pageSize = 3) => {
-    const url = `http://localhost:8080/sheets?size=${pageSize}&page=${page}&sort=id,desc&status=true`;
-    const tokenHeader = token;
+    const url = `sheets?size=${pageSize}&page=${page}&sort=id,desc&status=true`;
 
-    await axios
+    await api
       .get(url, {
         headers: {
           Authorization: `Bearer ${tokenHeader}`,
@@ -47,9 +47,9 @@ export const SheetListView = () => {
 
         setPagination((pagination) => ({
           ...pagination,
-          totalItem: response.data.totalElements, // Atualiza o total de elementos
-          current: page + 1, // Atualize a página atual, se necessário
-          pageSize, // Atualize o tamanho da página, se necessário
+          totalItem: response.data.totalElements,
+          current: page + 1,
+          pageSize,
         }));
       })
       .catch((error) => {
@@ -64,18 +64,19 @@ export const SheetListView = () => {
   const inactiveItem = (record: Sheet) => {
     setIsLoading(true);
     const removeId = record.id;
-    const url = "http://localhost:8080/sheets/" + removeId;
     const data = {
       STATUS: 0,
     };
 
-    axios
-      .patch(url, data)
+    api
+      .patch(`sheets/${removeId}`, data, {
+        headers: {
+          Authorization: `Bearer ${tokenHeader}`,
+        },
+      })
       .then((response) => {
-        // Removendo o registro inativado do estado
         setEntityList((prevList) => prevList.filter((item) => item.id !== record.id));
 
-        // Se você estiver usando alguma biblioteca de notificação no React, pode invocar aqui.
         console.log(response.data.message());
       })
       .catch((error) => {
@@ -158,12 +159,12 @@ export const SheetListView = () => {
           <Button
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
-            style={{ color: "#1890ff" }} // Cor do ícone de edição
+            style={{ color: "#1890ff" }}
           />
           <Button
             icon={<DeleteOutlined />}
             onClick={() => handleInactivate(record)}
-            style={{ color: "red", marginLeft: "10px" }} // Cor do ícone de inativação
+            style={{ color: "red", marginLeft: "10px" }}
           />
         </span>
       ),
@@ -202,7 +203,6 @@ export const SheetListView = () => {
           total: pagination.totalItem,
           onChange: (page, pageSize) => {
             setPagination({ ...pagination, current: page, pageSize });
-            // sheetConsultList(page - 1, pageSize); // Atualize isso para buscar dados conforme a página muda
           },
           showSizeChanger: true,
           pageSizeOptions: ["10", "20", "30", "50"],

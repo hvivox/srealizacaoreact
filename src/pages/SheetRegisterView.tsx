@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { DatePicker, Form, Input, InputNumber, Button, Row, Col, Divider } from "antd";
 
@@ -10,8 +9,13 @@ import { Sheet, TodoItem } from "../types/Types";
 import { useAppSelector } from "../redux/hooks/useAppSelector.tsx";
 import { setTodoList } from "../redux/reducers/todoListReducer.tsx";
 import { useDispatch } from "react-redux";
+import { useAuth } from "../hooks/useAuth.ts";
+import { api } from "../services/api.ts";
 
 export const SheetRegisterView = () => {
+  const { token } = useAuth();
+  const tokenHeader = token;
+
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
@@ -24,9 +28,14 @@ export const SheetRegisterView = () => {
 
   useEffect(() => {
     if (id) {
+      const url = `sheets/${id}`;
       setIsLoading(true);
-      axios
-        .get(`http://localhost:8080/sheets/${id}`)
+      api
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${tokenHeader}`,
+          },
+        })
         .then((response) => {
           const dataFound = {
             ...response.data,
@@ -79,9 +88,16 @@ export const SheetRegisterView = () => {
     };
 
     setIsLoading(true);
+    const urlPut = `sheets/${id}`;
+    const urlPost = `sheets`;
+
+    const headers = {
+      Authorization: `Bearer ${tokenHeader}`,
+    };
+
     const request = id
-      ? axios.put(`http://localhost:8080/sheets/${id}`, sheetToSave)
-      : axios.post(`http://localhost:8080/sheets`, sheetToSave);
+      ? api.put(urlPut, sheetToSave, { headers })
+      : api.post(urlPost, sheetToSave, { headers });
     request
       .then(() => {
         navigate("/sheet-list");
