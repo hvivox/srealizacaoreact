@@ -1,4 +1,4 @@
-import { Table, Modal, Row, Col, Button, Input } from "antd";
+import { Table, Modal, Row, Col, Button, Input, Checkbox, CheckboxProps } from "antd";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,8 @@ export const SheetListView = () => {
   const { token } = useAuth();
   const tokenHeader = token;
   const [isResponseError, setIsResponseError] = useState(false);
+  const [showInactiveRecordList, setShowInactiveRecordList] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [filteredEntityList, setFilteredEntityList] = useState<Sheet[]>([]);
@@ -24,17 +26,18 @@ export const SheetListView = () => {
   });
 
   useEffect(() => {
-    sheetConsultList(pagination.current - 1, pagination.pageSize);
+    sheetConsultList(pagination.current - 1, pagination.pageSize, showInactiveRecordList);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.current, pagination.pageSize, pagination.totalItem]);
+  }, [pagination.current, pagination.pageSize, pagination.totalItem, showInactiveRecordList]);
 
   useEffect(() => {
     filterList(searchValue);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue, entityList]);
 
-  const sheetConsultList = async (page = 0, pageSize = 3) => {
-    const url = `sheets?size=${pageSize}&page=${page}&sort=id,desc&status=true`;
+  const sheetConsultList = async (page = 0, pageSize = 3, showInactiveRecordList = false) => {
+    const statusFilter = showInactiveRecordList ? "" : true;
+    const url = `sheets?size=${pageSize}&page=${page}&sort=id,desc&status=${statusFilter}`;
 
     await api
       .get(url, {
@@ -171,6 +174,11 @@ export const SheetListView = () => {
     },
   ];
 
+  const onChange: CheckboxProps["onChange"] = (e) => {
+    setShowInactiveRecordList(e.target.checked);
+    console.log(`checked = ${e.target.checked}`);
+  };
+
   return (
     <div>
       <Row>
@@ -185,6 +193,9 @@ export const SheetListView = () => {
             onSearch={handleSearch}
             onChange={(e) => handleSearch(e.target.value)}
           />
+        </Col>
+        <Col span={1}>
+          <Checkbox onChange={onChange}>Mostrar Inativos</Checkbox>
         </Col>
         <Col>
           <Button type="primary" onClick={() => navigate("/sheet/register")}>
