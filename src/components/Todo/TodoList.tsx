@@ -4,9 +4,15 @@ import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import Col from "antd/es/grid/col";
 import { TodoItem } from "../../types/Types";
 import { FormInstance } from "antd/es/form/Form";
-import { addTodo, deleteTodo, toggleTodo } from "../../redux/reducers/todoListReducer.tsx";
+import {
+  addTodo,
+  deleteTodo,
+  reorderTodos,
+  toggleTodo,
+} from "../../redux/reducers/todoListReducer.tsx";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "../../redux/hooks/useAppSelector.tsx";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 
 interface TodoListProps {
   form: FormInstance;
@@ -60,6 +66,16 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
     }
   };
 
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const reorderedList = Array.from(todoItemList);
+    const [movedItem] = reorderedList.splice(result.source.index, 1);
+    reorderedList.splice(result.destination.index, 0, movedItem);
+
+    dispatch(reorderTodos({ sliceName: sliceAndListName, todoList: reorderedList }));
+  };
+
   return (
     <div>
       <h3>{todoTitle}</h3>
@@ -83,32 +99,58 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
       </Row>
 
       <div style={{ maxHeight: "260px", overflowY: "auto" }}>
-        <List
-          bordered={true}
-          dataSource={todoItemList}
-          renderItem={(todo) => (
-            <List.Item
-              key={todo.order}
-              actions={[
-                <Button
-                  icon={<DeleteOutlined />}
-                  onClick={() =>
-                    dispatch(deleteTodo({ sliceName: sliceAndListName, order: todo.order }))
-                  }
-                />,
-              ]}
-            >
-              <Checkbox
-                checked={todo.isCompleted}
-                onChange={() =>
-                  dispatch(toggleTodo({ sliceName: sliceAndListName, order: todo.order }))
-                }
-              />
-
-              <Typography.Text delete={todo.isCompleted}>{todo.description}</Typography.Text>
-            </List.Item>
-          )}
-        />
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId={`droppable-${sliceAndListName}`}>
+            {(provided) => (
+              <div {...provided.droppableProps} ref={provided.innerRef}>
+                <List
+                  bordered={true}
+                  dataSource={todoItemList}
+                  renderItem={(todo, index) => (
+                    <Draggable key={todo.order} draggableId={String(todo.order)} index={index}>
+                      {(provided) => (
+                        <List.Item
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          actions={[
+                            <Button
+                              icon={<DeleteOutlined />}
+                              onClick={() =>
+                                dispatch(
+                                  deleteTodo({
+                                    sliceName: sliceAndListName,
+                                    order: todo.order,
+                                  })
+                                )
+                              }
+                            />,
+                          ]}
+                        >
+                          <Checkbox
+                            checked={todo.isCompleted}
+                            onChange={() =>
+                              dispatch(
+                                toggleTodo({
+                                  sliceName: sliceAndListName,
+                                  order: todo.order,
+                                })
+                              )
+                            }
+                          />
+                          <Typography.Text delete={todo.isCompleted}>
+                            {todo.description}
+                          </Typography.Text>
+                        </List.Item>
+                      )}
+                    </Draggable>
+                  )}
+                />
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </div>
     </div>
   );

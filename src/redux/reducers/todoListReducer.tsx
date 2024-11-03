@@ -40,8 +40,24 @@ export const slice = createSlice({
         );
       }
     },
+
+    reorderTodos: (state, action: PayloadAction<{ sliceName: string; todoList: TodoItem[] }>) => {
+      state[action.payload.sliceName] = action.payload.todoList;
+    },
+
+    /*reorderTodos: (
+      state,
+      action: PayloadAction<{ sliceName: string; sourceIndex: number; destinationIndex: number }>
+    ) => {
+      const { sliceName, sourceIndex, destinationIndex } = action.payload;
+      const todoList = state[sliceName];
+      if (todoList) {
+        const [movedTodo] = todoList.splice(sourceIndex, 1);
+        todoList.splice(destinationIndex, 0, movedTodo);
+      }
+    },*/
   },
 });
 
-export const { addTodo, setTodoList, toggleTodo, deleteTodo } = slice.actions;
+export const { addTodo, setTodoList, toggleTodo, deleteTodo, reorderTodos } = slice.actions;
 export default slice.reducer;
