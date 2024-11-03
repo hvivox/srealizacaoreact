@@ -32,6 +32,20 @@ export const slice = createSlice({
         }
       }
     },
+
+    editTodo: (
+      state,
+      action: PayloadAction<{ sliceName: string; order: number; description: string }>
+    ) => {
+      const todoList = state[action.payload.sliceName];
+      if (todoList) {
+        const todo = todoList.find((todo) => todo.order === action.payload.order);
+        if (todo) {
+          todo.description = action.payload.description;
+        }
+      }
+    },
+
     deleteTodo: (state, action: PayloadAction<{ sliceName: string; order: number }>) => {
       const todoList = state[action.payload.sliceName];
       if (todoList) {
@@ -59,5 +73,6 @@ export const slice = createSlice({
   },
 });
 
-export const { addTodo, setTodoList, toggleTodo, deleteTodo, reorderTodos } = slice.actions;
+export const { addTodo, setTodoList, toggleTodo, deleteTodo, reorderTodos, editTodo } =
+  slice.actions;
 export default slice.reducer;

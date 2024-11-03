@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Input, Button, List, Typography, Checkbox, Form, Row } from "antd";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import Col from "antd/es/grid/col";
 import { TodoItem } from "../../types/Types";
 import { FormInstance } from "antd/es/form/Form";
 import {
   addTodo,
   deleteTodo,
-  reorderTodos,
+  editTodo,
+  reorderTodos as reorderTodoList,
   toggleTodo,
 } from "../../redux/reducers/todoListReducer.tsx";
 import { useDispatch } from "react-redux";
@@ -25,6 +26,9 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
   const [todoItem, setTodoItem] = useState("");
   const todoItemList = useAppSelector((state) => state.todoListReducer[sliceAndListName]);
   const dispatch = useDispatch();
+  const [editingItem, setEditingItem] = useState<{ order: number; description: string } | null>(
+    null
+  );
 
   const handleAddItem = () => {
     try {
@@ -73,7 +77,30 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
     const [movedItem] = reorderedList.splice(result.source.index, 1);
     reorderedList.splice(result.destination.index, 0, movedItem);
 
-    dispatch(reorderTodos({ sliceName: sliceAndListName, todoList: reorderedList }));
+    dispatch(reorderTodoList({ sliceName: sliceAndListName, todoList: reorderedList }));
+  };
+
+  const handleEditItem = (order: number, description: string) => {
+    setEditingItem({ order, description });
+  };
+
+  const handleSaveEdit = (order: number) => {
+    if (editingItem) {
+      dispatch(
+        editTodo({
+          sliceName: sliceAndListName,
+          order: order,
+          description: editingItem.description,
+        })
+      );
+      setEditingItem(null);
+    }
+  };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (editingItem) {
+      setEditingItem({ ...editingItem, description: e.target.value });
+    }
   };
 
   return (
@@ -115,6 +142,10 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
                           {...provided.dragHandleProps}
                           actions={[
                             <Button
+                              icon={<EditOutlined />}
+                              onClick={() => handleEditItem(todo.order, todo.description)}
+                            />,
+                            <Button
                               icon={<DeleteOutlined />}
                               onClick={() =>
                                 dispatch(
@@ -138,9 +169,18 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
                               )
                             }
                           />
-                          <Typography.Text delete={todo.isCompleted}>
-                            {todo.description}
-                          </Typography.Text>
+                          {editingItem && editingItem.order === todo.order ? (
+                            <Input
+                              value={editingItem.description}
+                              onChange={handleEditChange}
+                              onBlur={() => handleSaveEdit(todo.order)}
+                              onPressEnter={() => handleSaveEdit(todo.order)}
+                            />
+                          ) : (
+                            <Typography.Text delete={todo.isCompleted}>
+                              {todo.description}
+                            </Typography.Text>
+                          )}
                         </List.Item>
                       )}
                     </Draggable>
