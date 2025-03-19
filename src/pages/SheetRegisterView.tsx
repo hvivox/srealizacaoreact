@@ -127,13 +127,7 @@ export const SheetRegisterView = () => {
   };
 
   return (
-    <Form
-      form={form}
-      onSubmitCapture={(e) => e.preventDefault()}
-      layout="vertical"
-      onFinish={handleSubmit}
-      onValuesChange={handleValuesChange}
-    >
+    <Form form={form} layout="vertical" onFinish={handleSubmit} onValuesChange={handleValuesChange}>
       <Row gutter={16} style={{ marginTop: "10px" }}>
         <Col span={8}>
           <TitleForm>Cadastro de Folha</TitleForm>
@@ -216,7 +210,7 @@ export const SheetRegisterView = () => {
             <Col span={12}>
               <Button
                 type="primary"
-                htmlType="submit"
+                onClick={() => form.submit()}
                 disabled={form.getFieldsError().filter(({ errors }) => errors.length).length > 0}
               >
                 Salvar

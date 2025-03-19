@@ -114,7 +114,10 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
               placeholder="Digite a tarefa"
               value={todoItem}
               onChange={(e) => setTodoItem(e.target.value)}
-              onKeyUp={handleKeyUp}
+              onKeyUp={(e) => {
+                e.preventDefault();
+                handleKeyUp(e);
+              }}
             />
           </Form.Item>
         </Col>

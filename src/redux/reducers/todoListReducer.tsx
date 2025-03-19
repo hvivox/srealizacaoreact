@@ -58,18 +58,6 @@ export const slice = createSlice({
     reorderTodos: (state, action: PayloadAction<{ sliceName: string; todoList: TodoItem[] }>) => {
       state[action.payload.sliceName] = action.payload.todoList;
     },
-
-    /*reorderTodos: (
-      state,
-      action: PayloadAction<{ sliceName: string; sourceIndex: number; destinationIndex: number }>
-    ) => {
-      const { sliceName, sourceIndex, destinationIndex } = action.payload;
-      const todoList = state[sliceName];
-      if (todoList) {
-        const [movedTodo] = todoList.splice(sourceIndex, 1);
-        todoList.splice(destinationIndex, 0, movedTodo);
-      }
-    },*/
   },
 });
 
