@@ -207,8 +207,13 @@ export const SheetRegisterView = () => {
       {/* Botões para salvar e voltar */}
       <Form.Item shouldUpdate>
         {() => (
-          <Row gutter={16} style={{ marginTop: "4%" }}>
-            <Col span={12}>
+          <Row gutter={1} style={{ marginTop: "4%", justifyContent: "flex-end" }}>
+            <Col span={6}>
+              <Button onClick={() => navigate("/sheet-list")} style={{ marginLeft: "8px" }}>
+                Voltar
+              </Button>
+            </Col>
+            <Col span={6}>
               <Button
                 type="primary"
                 onClick={() => form.submit()}
@@ -216,12 +221,7 @@ export const SheetRegisterView = () => {
               >
                 Salvar
               </Button>
-            </Col>
-            <Col span={12}>
-              <Button onClick={() => navigate("/sheet-list")} style={{ marginLeft: "8px" }}>
-                Voltar
-              </Button>
-            </Col>
+            </Col>            
           </Row>
         )}
       </Form.Item>
