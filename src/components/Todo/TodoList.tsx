@@ -128,13 +128,14 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
         </Col>
       </Row>
 
-      <div style={{ maxHeight: "260px", overflowY: "auto" }}>
+      <div >
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId={`droppable-${sliceAndListName}`}>
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 <List
                   bordered={true}
+                  style={{ height: '260px', overflowY: 'auto' }}
                   dataSource={todoItemList}
                   renderItem={(todo, index) => (
                     <Draggable key={todo.order} draggableId={String(todo.order)} index={index}>

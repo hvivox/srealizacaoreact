@@ -175,7 +175,7 @@ export const SheetRegisterView = () => {
             fieldName="priority"
             sliceAndListName="priorityList"
           />
-          <Divider orientation="left">Large Size</Divider>
+          <Divider orientation="left"></Divider>
           <TodoList
             form={form}
             todoTitle="Restrição"
@@ -194,6 +194,7 @@ export const SheetRegisterView = () => {
             fieldName="learning"
             sliceAndListName="learningList"
           />
+          <Divider orientation="left"></Divider>
           <TodoList
             form={form}
             todoTitle="Gratidão"
