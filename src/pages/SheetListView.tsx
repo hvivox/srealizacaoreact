@@ -92,15 +92,11 @@ export const SheetListView = () => {
   };
 
   const handleEdit = (record: Sheet) => {
-    navigate(`/sheet/edit/${record.id}`);
-    console.log("Editando:", record);
-    // Aqui você pode navegar para a tela de edição ou abrir um modal de edição
+    navigate(`/sheet/edit/${record.id}`);   
   };
 
   const handleInactivate = (record: Sheet) => {
-    // console.log("Inativando:", record);
-    showConfirm(record);
-    // Aqui você pode fazer a chamada API para inativar o registro ou abrir uma confirmação
+    showConfirm(record);   
   };
 
   function showConfirm(record: Sheet) {

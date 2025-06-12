@@ -162,29 +162,31 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
                             />,
                           ]}
                         >
-                          <Checkbox
-                            checked={todo.isCompleted}
-                            onChange={() =>
-                              dispatch(
-                                toggleTodo({
-                                  sliceName: sliceAndListName,
-                                  order: todo.order,
-                                })
-                              )
-                            }
-                          />
-                          {editingItem && editingItem.order === todo.order ? (
-                            <Input
-                              value={editingItem.description}
-                              onChange={handleEditChange}
-                              onBlur={() => handleSaveEdit(todo.order)}
-                              onPressEnter={() => handleSaveEdit(todo.order)}
+                          <div className={"todo-item-line"}> 
+                            <Checkbox
+                              checked={todo.isCompleted}
+                              onChange={() =>
+                                dispatch(
+                                  toggleTodo({
+                                    sliceName: sliceAndListName,
+                                    order: todo.order,
+                                  })
+                                )
+                              }
                             />
-                          ) : (
-                            <Typography.Text delete={todo.isCompleted}>
-                              {todo.description}
-                            </Typography.Text>
-                          )}
+                            {editingItem && editingItem.order === todo.order ? (
+                              <Input
+                                value={editingItem.description}
+                                onChange={handleEditChange}
+                                onBlur={() => handleSaveEdit(todo.order)}
+                                onPressEnter={() => handleSaveEdit(todo.order)}
+                              />
+                            ) : (
+                              <Typography.Text delete={todo.isCompleted}>
+                                {todo.description}
+                              </Typography.Text>
+                            )}
+                          </div>
                         </List.Item>
                       )}
                     </Draggable>

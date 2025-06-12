@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { DatePicker, Form, Input, InputNumber, Button, Row, Col, Divider } from "antd";
+import { DatePicker, Form, Input, InputNumber, Button, Row, Col, Divider, Grid } from "antd";
 
 import moment from "moment";
 import { TitleForm } from "../components/LayoutForm/TitleForm";
@@ -11,24 +11,26 @@ import { setTodoList } from "../redux/reducers/todoListReducer.tsx";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../hooks/useAuth.ts";
 import { api } from "../services/api.ts";
+const { useBreakpoint } = Grid;
 
 export const SheetRegisterView = () => {
   const { token } = useAuth();
   const tokenHeader = token;
+  const screens = useBreakpoint();
 
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
-  const { id } = useParams<{ id: string }>();
+  const { id: editRecordId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [jsonPreview, setJsonPreview] = useState("");
   const dispatch = useDispatch();
   const todoItemList = useAppSelector((state) => state.todoListReducer);
 
-  const { priorityList, gratitudeList, restrictionList, learningList } = todoItemList;
+  const { priorityList, gratitudeList, restrictionList, learningList }  = todoItemList;
 
   useEffect(() => {
-    if (id) {
-      const url = `sheets/${id}`;
+    if (editRecordId) {
+      const url = `sheets/${editRecordId}`;
       setIsLoading(true);
       api
         .get(url, {
@@ -75,7 +77,7 @@ export const SheetRegisterView = () => {
       form.setFieldsValue({ status: true }); // Defina aqui o valor padrão do status ao criar registro
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, form]);
+  }, [editRecordId, form]);
 
   const handleSubmit = (values: Sheet) => {
     const sheetToSave = {
@@ -88,14 +90,14 @@ export const SheetRegisterView = () => {
     };
 
     setIsLoading(true);
-    const urlPut = `sheets/${id}`;
+    const urlPut = `sheets/${editRecordId}`;
     const urlPost = `sheets`;
 
     const headers = {
       Authorization: `Bearer ${tokenHeader}`,
     };
 
-    const request = id
+    const request = editRecordId
       ? api.put(urlPut, sheetToSave, { headers })
       : api.post(urlPost, sheetToSave, { headers });
     request
@@ -129,7 +131,7 @@ export const SheetRegisterView = () => {
   return (
     <Form form={form} layout="vertical" onFinish={handleSubmit} onValuesChange={handleValuesChange}>
       <Row gutter={16} style={{ marginTop: "10px" }}>
-        <Col span={8}>
+        <Col xs={24} md={11}>
           <TitleForm>Cadastro de Folha</TitleForm>
         </Col>
         <Col span={8}>
@@ -141,7 +143,7 @@ export const SheetRegisterView = () => {
             <DatePicker />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col xs={24} md={11}>
           {" "}
           <Form.Item
             label="Nota do Dia"
@@ -154,7 +156,7 @@ export const SheetRegisterView = () => {
         </Col>
       </Row>
       <Row gutter={16}>
-        <Col span={8}>
+        <Col xs={24} md={11}>
           <Form.Item
             label="Foco"
             name="focus"
@@ -168,14 +170,15 @@ export const SheetRegisterView = () => {
         </Col>
       </Row>
       <Row gutter={16}>
-        <Col span={11}>
+        <Col xs={24} md={11}>
           <TodoList
             form={form}
             todoTitle="Prioridade"
             fieldName="priority"
             sliceAndListName="priorityList"
           />
-          <Divider orientation="left"></Divider>
+         
+          <Divider orientation="left" ></Divider>
           <TodoList
             form={form}
             todoTitle="Restrição"
@@ -183,11 +186,12 @@ export const SheetRegisterView = () => {
             sliceAndListName="restrictionList"
           />
         </Col>
-
+        
         <Col>
-          <Divider type="vertical" style={{ height: "100%", minHeight: "400px" }} />
+              <Divider type={ screens.xs ?  "horizontal" : "vertical"} style={{ height: "100%" }} />
         </Col>
-        <Col span={11}>
+      
+        <Col xs={24} md={11}>
           <TodoList
             form={form}
             todoTitle="Aprendizagens"

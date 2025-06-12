@@ -26,6 +26,11 @@
 }
 
 .blue-background.ul{
-  background-color: #1890ff;
-  
+  background-color: #1890ff;  
+}
+
+.todo-item-line {
+  display: flex; 
+  alignItems: center; 
+  gap: 8px;
 }
