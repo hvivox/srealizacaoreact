@@ -15,9 +15,8 @@ const AppContent: React.FC = () => {
         <>
           <Navbar />
           <div className="container">
-            <div>
-              <MainRoutes />
-            </div>
+            <MainRoutes />
+
             <footer>Todos os direitos reservados</footer>
           </div>
         </>
