@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  react-app:
+    container_name: srealizacao-frontend
+    image: srealizacao-frontend:1.0
+    build:
+      context: .
+      dockerfile: Dockerfile    
+    ports:
+      - "3000:80"
+    volumes:
+          - ./nginx.conf:/etc/nginx/nginx.conf:ro
