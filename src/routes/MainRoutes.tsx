@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router";
 import { HomeView } from "../pages/HomeView.tsx";
 import { About } from "../pages/About/About.tsx";
 
@@ -9,10 +9,10 @@ export const MainRoutes = () => {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<HomeView />} />
+        <Route path="/" index element={<HomeView />} />
         <Route path="/sheet-list" element={<SheetListView />} />
-        <Route path="/sheet/register" element={<SheetRegisterView />} />
-        <Route path="/sheet/edit/:id" element={<SheetRegisterView />} />
+        
+        <Route path="/sheet" element={<SheetRegisterView />} />
         <Route path="/about" element={<About />} />
         <Route path="*" element={<NotFoundView />} />
       </Routes>

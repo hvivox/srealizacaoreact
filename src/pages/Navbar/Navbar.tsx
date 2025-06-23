@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Menu, Typography, Layout } from "antd";
 import { useAppSelector } from "../../redux/hooks/useAppSelector";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";

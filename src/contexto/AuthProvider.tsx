@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState, useRef, ReactNode, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import jwtDecode from "jwt-decode";
 import KeycloakSingleton from "./Keycloak";
 import { CPF_KEY, TOKEN_KEY } from "../types/Constantes";

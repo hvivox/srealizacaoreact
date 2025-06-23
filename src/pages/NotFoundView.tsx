@@ -1,5 +1,5 @@
 import { Button } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export const NotFoundView = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export const NotFoundView = () => {
       <p style={{ fontSize: "16px", color: "#595959", marginBottom: "24px" }}>
         Desculpe, a página que você está procurando não existe ou foi movida.
       </p>
-      <Button type="primary" onClick={() => navigate("/")}>
+      <Button type="primary" onClick={() => navigate(-1)}>
         Voltar para a página inicial
       </Button>
     </div>

@@ -1,7 +1,7 @@
 import { Table, Modal, Row, Col, Button, Input, Checkbox, CheckboxProps } from "antd";
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Pagination, Sheet } from "../types/Types";
 import { TitleForm } from "../components/LayoutForm/TitleForm";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
@@ -92,7 +92,7 @@ export const SheetListView = () => {
   };
 
   const handleEdit = (record: Sheet) => {
-    navigate(`/sheet/edit/${record.id}`);   
+    navigate(`/sheet?edit=${record.id}`);   
   };
 
   const handleInactivate = (record: Sheet) => {
@@ -175,6 +175,10 @@ export const SheetListView = () => {
     console.log(`checked = ${e.target.checked}`);
   };
 
+  function handleSheetViewOpen(){
+    navigate("/sheet");
+  }
+
   return (
     <div>
       <Row>
@@ -194,7 +198,7 @@ export const SheetListView = () => {
           <Checkbox onChange={onChange}>Mostrar Inativos</Checkbox>
         </Col>
         <Col>
-          <Button type="primary" onClick={() => navigate("/sheet/register")}>
+          <Button type="primary" onClick={handleSheetViewOpen}>
             Novo
           </Button>
         </Col>
