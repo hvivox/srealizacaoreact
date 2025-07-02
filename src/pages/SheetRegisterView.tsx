@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router";
 import { DatePicker, Form, Input, InputNumber, Button, Row, Col, Divider, Grid } from "antd";
 
 import moment from "moment";
@@ -20,14 +20,16 @@ export const SheetRegisterView = () => {
 
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
-  const { id: editRecordId } = useParams<{ id: string }>();
+  
+  const [searchParams] = useSearchParams();
+  const editRecordId = searchParams.get("edit");
   const navigate = useNavigate();
   const [jsonPreview, setJsonPreview] = useState("");
   const dispatch = useDispatch();
   const todoItemList = useAppSelector((state) => state.todoListReducer);
 
   const { priorityList, gratitudeList, restrictionList, learningList }  = todoItemList;
-
+//console.log('Entrou no SheetRegisterView');
   useEffect(() => {
     if (editRecordId) {
       const url = `sheets/${editRecordId}`;
