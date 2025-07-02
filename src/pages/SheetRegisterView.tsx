@@ -138,7 +138,7 @@ export const SheetRegisterView = () => {
           <Form.Item
             label="Data de Realização"
             name="realizationDate"
-            rules={[{ required: true, message: "Preenha o campo data" }]}
+            rules={[{ required: true, message: "Preencha o campo data" }]}
           >
             <DatePicker />
           </Form.Item>
@@ -160,7 +160,7 @@ export const SheetRegisterView = () => {
           <Form.Item
             label="Foco"
             name="focus"
-            rules={[{ required: true, message: "Preenha o campo foco" }]}
+            rules={[{ required: true, message: "Preencha o campo foco" }]}
           >
             <Input />
           </Form.Item>
