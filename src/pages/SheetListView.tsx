@@ -56,11 +56,11 @@ export const SheetListView = () => {
         }));
       })
       .catch((error) => {
-        setIsResponseError(isResponseError);
+        setIsResponseError(true);
         console.log(error);
       })
       .finally(() => {
-        setIsLoading(isLoading);
+        setIsLoading(false);
       });
   };
 
