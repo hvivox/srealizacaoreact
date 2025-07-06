@@ -7,15 +7,14 @@ import { TitleForm } from "../components/LayoutForm/TitleForm";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useAuth } from "../hooks/useAuth";
 import { api } from "../services/api";
+import { notifyError, notifySuccess } from "../utils/notification";
 
 export const SheetListView = () => {
   const [entityList, setEntityList] = useState<Sheet[]>([]);
   const { token } = useAuth();
   const tokenHeader = token;
-  const [isResponseError, setIsResponseError] = useState(false);
   const [showInactiveRecordList, setShowInactiveRecordList] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [filteredEntityList, setFilteredEntityList] = useState<Sheet[]>([]);
   const [searchValue, setSearchValue] = useState("");
@@ -56,16 +55,14 @@ export const SheetListView = () => {
         }));
       })
       .catch((error) => {
-        setIsResponseError(true);
-        console.log(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
+        notifyError();
+        console.error(error);
       });
+
   };
 
   const inactiveItem = (record: Sheet) => {
-    setIsLoading(true);
+
     const removeId = record.id;
     const data = {
       STATUS: 0,
@@ -77,26 +74,22 @@ export const SheetListView = () => {
           Authorization: `Bearer ${tokenHeader}`,
         },
       })
-      .then((response) => {
+      .then(() => {
         setEntityList((prevList) => prevList.filter((item) => item.id !== record.id));
-
-        console.log(response.data.message());
+        notifySuccess();
       })
       .catch((error) => {
-        setIsResponseError(true);
-        console.log(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
+        notifyError();
+        console.error(error);
       });
   };
 
   const handleEdit = (record: Sheet) => {
-    navigate(`/sheet?edit=${record.id}`);   
+    navigate(`/sheet?edit=${record.id}`);
   };
 
   const handleInactivate = (record: Sheet) => {
-    showConfirm(record);   
+    showConfirm(record);
   };
 
   function showConfirm(record: Sheet) {
@@ -110,7 +103,7 @@ export const SheetListView = () => {
         inactiveItem(record);
       },
       onCancel() {
-        console.log("Ação cancelada");
+        return;
       },
     });
   }
@@ -172,10 +165,9 @@ export const SheetListView = () => {
 
   const onChange: CheckboxProps["onChange"] = (e) => {
     setShowInactiveRecordList(e.target.checked);
-    console.log(`checked = ${e.target.checked}`);
   };
 
-  function handleSheetViewOpen(){
+  function handleSheetViewOpen() {
     navigate("/sheet");
   }
 
