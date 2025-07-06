@@ -40,7 +40,7 @@ export const Navbar: React.FC = () => {
           key: "logout",
           icon: <LogoutOutlined />,
           label: "Sair",
-          onClick: logOut, // Chama o logout ao clicar no item
+          onClick: logOut,
         },
       ],
     },

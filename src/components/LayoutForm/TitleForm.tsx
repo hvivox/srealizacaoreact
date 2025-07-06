@@ -6,4 +6,4 @@ export const TitleForm = ({ children }: { children: ReactNode }) => {
       <h1>{children}</h1>
     </div>
   );
-}; //Crie um componente para o título do formulário.
+}; 

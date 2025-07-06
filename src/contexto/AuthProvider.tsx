@@ -26,8 +26,8 @@ export const AuthContext = createContext<AuthContextType>({
   token: null,
   cpfLogado: null,
   nomeLogado: "",
-  setToken: () => {},
-  logOut: () => {},
+  setToken: () => { },
+  logOut: () => { },
 });
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
@@ -81,13 +81,13 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             sessionStorage.setItem(TOKEN_KEY, keycloak.token!);
           } else {
             console.warn(
-              "Token not refreshed. Valid for " +
-                Math.round(
-                  (keycloak.tokenParsed?.exp ?? 0) +
-                    (keycloak.timeSkew ?? 0) -
-                    new Date().getTime() / 1000
-                ) +
-                " seconds"
+              "Token não atualizado. Válido por " +
+              Math.round(
+                (keycloak.tokenParsed?.exp ?? 0) +
+                (keycloak.timeSkew ?? 0) -
+                new Date().getTime() / 1000
+              ) +
+              " seconds"
             );
           }
         })
