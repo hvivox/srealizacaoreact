@@ -10,8 +10,8 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store.tsx";
 import { MainRoutes } from "./routes/MainRoutes.tsx";
 import AuthProvider from "./contexto/AuthProvider.tsx";
-import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner.tsx";
-import { ApiInterceptorsProvider } from "./provider/ApiInterceptorsProvider.tsx";
+import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
+import { ApiInterceptorsProvider } from "./provider/ApiInterceptorsProvider";
 
 
 Modal.setAppElement("#root");
