@@ -10,6 +10,7 @@ interface AuthContextType {
   nomeLogado: string;
   setToken: (newToken: { access_token: string }) => void;
   logOut: () => void;
+  refreshToken: () => Promise<string | null>;
 }
 
 interface AuthProviderProps {
@@ -28,14 +29,15 @@ export const AuthContext = createContext<AuthContextType>({
   nomeLogado: "",
   setToken: () => { },
   logOut: () => { },
+  refreshToken: async () => null,
 });
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate();
   const isInitialized = useRef(false); // Use useRef para controlar o estado de inicialização
 
-  const [cpfLogado, setcpfLogado] = useState<string | null>(() => localStorage.getItem(CPF_KEY));
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
+  const [cpfLogado, setcpfLogado] = useState<string | null>(() => sessionStorage.getItem(CPF_KEY));
+  const [token, setToken] = useState<string | null>(() => sessionStorage.getItem(TOKEN_KEY));
   const [nomeLogado, setNomeLogado] = useState<string>("");
   const keycloak = KeycloakSingleton.getInstance();
 
@@ -43,12 +45,20 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setToken(null);
     setcpfLogado(null); // Clear CPF on logout
     setNomeLogado("");
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(CPF_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(CPF_KEY);
     keycloak.logout({ redirectUri: window.location.origin });
   }, [keycloak]);
 
   useEffect(() => {
+    // Migração: Remove dados antigos do localStorage se existirem
+    const oldToken = localStorage.getItem(TOKEN_KEY);
+    const oldCpf = localStorage.getItem(CPF_KEY);
+    if (oldToken || oldCpf) {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(CPF_KEY);
+    }
+
     if (!isInitialized.current && keycloak) {
       isInitialized.current = true;
 
@@ -103,16 +113,39 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const handleSetToken = (newToken: { access_token: string }) => {
     const tokenValue = newToken.access_token;
     setToken(tokenValue);
-    localStorage.setItem(TOKEN_KEY, tokenValue);
+    sessionStorage.setItem(TOKEN_KEY, tokenValue);
 
     const decodedToken: DecodedToken = jwtDecode<DecodedToken>(tokenValue);
     setcpfLogado(decodedToken.cpf);
-    localStorage.setItem(CPF_KEY, decodedToken.cpf);
+    sessionStorage.setItem(CPF_KEY, decodedToken.cpf);
   };
+
+  const handleRefreshToken = useCallback(async (): Promise<string | null> => {
+    try {
+      const refreshed = await keycloak.updateToken(30);
+      if (refreshed && keycloak.token) {
+        setToken(keycloak.token);
+        sessionStorage.setItem(TOKEN_KEY, keycloak.token);
+        return keycloak.token;
+      }
+      return token;
+    } catch (error) {
+      console.error("Erro ao renovar token:", error);
+      handleLogOut();
+      return null;
+    }
+  }, [keycloak, token, handleLogOut]);
 
   return (
     <AuthContext.Provider
-      value={{ token, cpfLogado, nomeLogado, setToken: handleSetToken, logOut: handleLogOut }}
+      value={{
+        token,
+        cpfLogado,
+        nomeLogado,
+        setToken: handleSetToken,
+        logOut: handleLogOut,
+        refreshToken: handleRefreshToken
+      }}
     >
       {children}
     </AuthContext.Provider>
