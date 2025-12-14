@@ -59,7 +59,7 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
       setTodoItem("");
       form.resetFields([fieldName]);
     } catch (errorInfo) {
-      console.log("Erro de validação:", errorInfo);
+      console.error("Erro de validação:", errorInfo);
     }
   };
 
@@ -162,7 +162,7 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
                             />,
                           ]}
                         >
-                          <div className={"todo-item-line"}> 
+                          <div className={"todo-item-line"}>
                             <Checkbox
                               checked={todo.isCompleted}
                               onChange={() =>

@@ -3,6 +3,7 @@
 import { Navbar } from "../../pages/Navbar/Navbar.tsx";
 import { useAuth } from "../../hooks/useAuth.ts";
 import { Outlet } from "react-router";
+import { Footer } from "./Footer/Footer.tsx";
 
 const LayoutComponent: React.FC = () => {
   const { token } = useAuth();
@@ -12,10 +13,11 @@ const LayoutComponent: React.FC = () => {
       {token && (
         <>
           <Navbar />
-          <div className="container">           
-            <Outlet /> {/* Renderiza as rodas chama o MainRoute que agrupa as rodas dentro do layout */}
-            <footer>Todos os direitos reservados</footer>
+          <div className="container">
+            <Outlet /> {/* Chama o MainRoute que agrupa as telas dentro do layout */}
+
           </div>
+          <Footer />
         </>
       )}
     </div>

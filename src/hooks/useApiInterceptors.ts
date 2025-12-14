@@ -1,15 +1,16 @@
-import axios from 'axios';
+
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import useErrorHandler from './useErrorHandler';
-import { setGlobalLoading } from '../redux/reducers/globalLoading';
+import { setGlobalLoading } from '../redux/reducers/globalLoadingReducer';
+import { api } from '../services/api';
 
 const useApiInterceptors = () => {
   const dispatch = useDispatch();
   const errorHandler = useErrorHandler();
 
   useEffect(() => {
-    const requestInterceptor = axios.interceptors.request.use(
+    const requestInterceptor = api.interceptors.request.use(
       (request) => {
         dispatch(setGlobalLoading(true));
         return request;
@@ -17,7 +18,7 @@ const useApiInterceptors = () => {
       (error) => Promise.reject(error),
     );
 
-    const responseInterceptor = axios.interceptors.response.use(
+    const responseInterceptor = api.interceptors.response.use(
       (response) => {
         dispatch(setGlobalLoading(false));
         return response;
@@ -26,10 +27,11 @@ const useApiInterceptors = () => {
     );
 
     return () => {
-      axios.interceptors.request.eject(requestInterceptor);
-      axios.interceptors.response.eject(responseInterceptor);
+      api.interceptors.request.eject(requestInterceptor);
+      api.interceptors.response.eject(responseInterceptor);
     };
   }, [dispatch, errorHandler]);
 };
+
 
 export default useApiInterceptors;

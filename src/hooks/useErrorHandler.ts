@@ -1,6 +1,6 @@
 import { notification, message } from 'antd';
 import { useDispatch } from 'react-redux';
-import { setGlobalLoading } from '../redux/reducers/globalLoading';
+import { setGlobalLoading } from '../redux/reducers/globalLoadingReducer';
 
 
 const useErrorHandler = () => {

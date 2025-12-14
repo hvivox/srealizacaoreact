@@ -11,6 +11,7 @@ import { setTodoList } from "../redux/reducers/todoListReducer.tsx";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../hooks/useAuth.ts";
 import { api } from "../services/api.ts";
+import { notifyError, notifySuccess } from "../utils/notification.ts";
 const { useBreakpoint } = Grid;
 
 export const SheetRegisterView = () => {
@@ -19,8 +20,7 @@ export const SheetRegisterView = () => {
   const screens = useBreakpoint();
 
   const [form] = Form.useForm();
-  const [isLoading, setIsLoading] = useState(false);
-  
+
   const [searchParams] = useSearchParams();
   const editRecordId = searchParams.get("edit");
   const navigate = useNavigate();
@@ -28,12 +28,11 @@ export const SheetRegisterView = () => {
   const dispatch = useDispatch();
   const todoItemList = useAppSelector((state) => state.todoListReducer);
 
-  const { priorityList, gratitudeList, restrictionList, learningList }  = todoItemList;
-//console.log('Entrou no SheetRegisterView');
+  const { priorityList, gratitudeList, restrictionList, learningList } = todoItemList;
+
   useEffect(() => {
     if (editRecordId) {
       const url = `sheets/${editRecordId}`;
-      setIsLoading(true);
       api
         .get(url, {
           headers: {
@@ -62,10 +61,8 @@ export const SheetRegisterView = () => {
         })
 
         .catch((error) => {
+          notifyError();
           console.error("Erro ao buscar folha", error);
-        })
-        .finally(() => {
-          setIsLoading(false);
         });
     } else {
       // criar uma variavel com todoList vazio
@@ -76,7 +73,7 @@ export const SheetRegisterView = () => {
       dispatch(setTodoList({ sliceName: "restrictionList", todoList: emptyList }));
       dispatch(setTodoList({ sliceName: "learningList", todoList: emptyList }));
 
-      form.setFieldsValue({ status: true }); // Defina aqui o valor padrão do status ao criar registro
+      form.setFieldsValue({ status: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editRecordId, form]);
@@ -91,7 +88,6 @@ export const SheetRegisterView = () => {
       learningList,
     };
 
-    setIsLoading(true);
     const urlPut = `sheets/${editRecordId}`;
     const urlPost = `sheets`;
 
@@ -104,17 +100,14 @@ export const SheetRegisterView = () => {
       : api.post(urlPost, sheetToSave, { headers });
     request
       .then(() => {
+        notifySuccess();
         navigate("/sheet-list");
       })
       .catch((error) => {
-        console.error("Erro ao salvar a folha", error);
+        notifyError();
+        console.error("Erro inesperado", error);
       })
-      .finally(() => {
-        setIsLoading(false);
-      });
   };
-
-  if (isLoading) return <h1>Carregando...</h1>;
 
   // Atualiza o JSON sempre que os campos do formulário forem alterados
   const handleValuesChange = (_changedValues: Sheet, allValues: Sheet) => {
@@ -127,7 +120,7 @@ export const SheetRegisterView = () => {
       learningList,
     };
     setJsonPreview(JSON.stringify(sheetToSave, null, 2));
-    //console.log(JSON.stringify(changedValues, null, 2));
+
   };
 
   return (
@@ -179,7 +172,7 @@ export const SheetRegisterView = () => {
             fieldName="priority"
             sliceAndListName="priorityList"
           />
-         
+
           <Divider orientation="left" ></Divider>
           <TodoList
             form={form}
@@ -188,11 +181,11 @@ export const SheetRegisterView = () => {
             sliceAndListName="restrictionList"
           />
         </Col>
-        
+
         <Col>
-              <Divider type={ screens.xs ?  "horizontal" : "vertical"} style={{ height: "100%" }} />
+          <Divider type={screens.xs ? "horizontal" : "vertical"} style={{ height: "100%" }} />
         </Col>
-      
+
         <Col xs={24} md={11}>
           <TodoList
             form={form}
@@ -227,7 +220,7 @@ export const SheetRegisterView = () => {
               >
                 Salvar
               </Button>
-            </Col>            
+            </Col>
           </Row>
         )}
       </Form.Item>
