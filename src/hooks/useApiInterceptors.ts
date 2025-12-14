@@ -5,11 +5,9 @@ import useErrorHandler from './useErrorHandler';
 import { setGlobalLoading } from '../redux/reducers/globalLoadingReducer';
 import { api } from '../services/api';
 
-
 const useApiInterceptors = () => {
   const dispatch = useDispatch();
   const errorHandler = useErrorHandler();
-
 
   useEffect(() => {
     const requestInterceptor = api.interceptors.request.use(
