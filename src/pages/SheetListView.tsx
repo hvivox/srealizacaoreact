@@ -34,6 +34,7 @@ export const SheetListView = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue, entityList]);
 
+
   const sheetConsultList = async (page = 0, pageSize = 3, showInactiveRecordList = false) => {
     const statusFilter = showInactiveRecordList ? "" : true;
     const url = `sheets?size=${pageSize}&page=${page}&sort=id,desc&status=${statusFilter}`;
