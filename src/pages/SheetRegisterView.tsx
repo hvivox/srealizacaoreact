@@ -11,7 +11,7 @@ import { setTodoList } from "../redux/reducers/todoListReducer.tsx";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../hooks/useAuth.ts";
 import { api } from "../services/api.ts";
-import { notifyError, notifySuccess } from "../utils/notification.ts";
+import { notifyError, notifySuccess, getErrorMessage } from "../utils/notification.ts";
 const { useBreakpoint } = Grid;
 
 export const SheetRegisterView = () => {
@@ -61,7 +61,8 @@ export const SheetRegisterView = () => {
         })
 
         .catch((error) => {
-          notifyError();
+          const errorMessage = getErrorMessage(error, "Erro ao buscar folha. Tente novamente mais tarde.");
+          notifyError(errorMessage);
           console.error("Erro ao buscar folha", error);
         });
     } else {
@@ -104,7 +105,13 @@ export const SheetRegisterView = () => {
         navigate("/sheet-list");
       })
       .catch((error) => {
-        notifyError();
+        const errorMessage = getErrorMessage(
+          error,
+          editRecordId
+            ? "Erro ao atualizar folha. Tente novamente mais tarde."
+            : "Erro ao criar folha. Tente novamente mais tarde."
+        );
+        notifyError(errorMessage);
         console.error("Erro inesperado", error);
       })
   };
