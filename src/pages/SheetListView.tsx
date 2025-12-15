@@ -7,7 +7,7 @@ import { TitleForm } from "../components/LayoutForm/TitleForm";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useAuth } from "../hooks/useAuth";
 import { api } from "../services/api";
-import { notifyError, notifySuccess, getErrorMessage } from "../utils/notification";
+import { notifySuccess } from "../utils/notification";
 
 export const SheetListView = () => {
   const [entityList, setEntityList] = useState<Sheet[]>([]);
@@ -56,8 +56,7 @@ export const SheetListView = () => {
         }));
       })
       .catch((error) => {
-        const errorMessage = getErrorMessage(error, "Erro ao carregar lista de folhas. Tente novamente mais tarde.");
-        notifyError(errorMessage);
+        // Erro já é tratado pelo interceptor (useErrorHandler)
         console.error(error);
       });
 
@@ -81,8 +80,7 @@ export const SheetListView = () => {
         notifySuccess();
       })
       .catch((error) => {
-        const errorMessage = getErrorMessage(error, "Erro ao inativar folha. Tente novamente mais tarde.");
-        notifyError(errorMessage);
+        // Erro já é tratado pelo interceptor (useErrorHandler)
         console.error(error);
       });
   };
