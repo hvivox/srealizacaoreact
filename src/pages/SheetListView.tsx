@@ -7,7 +7,7 @@ import { TitleForm } from "../components/LayoutForm/TitleForm";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useAuth } from "../hooks/useAuth";
 import { api } from "../services/api";
-import { notifyError, notifySuccess } from "../utils/notification";
+import { notifySuccess } from "../utils/notification";
 
 export const SheetListView = () => {
   const [entityList, setEntityList] = useState<Sheet[]>([]);
@@ -56,7 +56,7 @@ export const SheetListView = () => {
         }));
       })
       .catch((error) => {
-        notifyError();
+        // Erro já é tratado pelo interceptor (useErrorHandler)
         console.error(error);
       });
 
@@ -80,7 +80,7 @@ export const SheetListView = () => {
         notifySuccess();
       })
       .catch((error) => {
-        notifyError();
+        // Erro já é tratado pelo interceptor (useErrorHandler)
         console.error(error);
       });
   };
