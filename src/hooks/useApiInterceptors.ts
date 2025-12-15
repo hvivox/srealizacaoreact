@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import useErrorHandler from './useErrorHandler';
 import { setGlobalLoading } from '../redux/reducers/globalLoadingReducer';
 import { api } from '../services/api';
@@ -10,6 +10,12 @@ import KeycloakSingleton from '../contexto/Keycloak';
 const useApiInterceptors = () => {
   const dispatch = useDispatch();
   const errorHandler = useErrorHandler();
+  const errorHandlerRef = useRef(errorHandler);
+
+  // Atualiza a ref sempre que errorHandler mudar (que só acontece se dispatch mudar, o que é raro)
+  useEffect(() => {
+    errorHandlerRef.current = errorHandler;
+  }, [errorHandler]);
 
   useEffect(() => {
     let isRefreshing = false;
@@ -120,7 +126,7 @@ const useApiInterceptors = () => {
           }
         }
 
-        return errorHandler(error);
+        return errorHandlerRef.current(error);
       },
     );
 
@@ -128,7 +134,7 @@ const useApiInterceptors = () => {
       api.interceptors.request.eject(requestInterceptor);
       api.interceptors.response.eject(responseInterceptor);
     };
-  }, [dispatch, errorHandler]);
+  }, [dispatch]);
 };
 
 
