@@ -25,6 +25,7 @@ export const SheetRegisterView = () => {
   const editRecordId = searchParams.get("edit");
   const navigate = useNavigate();
   const [jsonPreview, setJsonPreview] = useState("");
+  const [showJsonPreview, setShowJsonPreview] = useState(false);
   const dispatch = useDispatch();
   const todoItemList = useAppSelector((state) => state.todoListReducer);
 
@@ -113,16 +114,35 @@ export const SheetRegisterView = () => {
 
   // Atualiza o JSON sempre que os campos do formulário forem alterados
   const handleValuesChange = (_changedValues: Sheet, allValues: Sheet) => {
-    const sheetToSave = {
-      ...allValues,
-      realizationDate: moment(allValues.realizationDate).toDate(),
-      priorityList,
-      gratitudeList,
-      restrictionList,
-      learningList,
-    };
-    setJsonPreview(JSON.stringify(sheetToSave, null, 2));
+    // Só atualiza o JSON se o preview estiver visível
+    if (showJsonPreview) {
+      const sheetToSave = {
+        ...allValues,
+        realizationDate: moment(allValues.realizationDate).toDate(),
+        priorityList,
+        gratitudeList,
+        restrictionList,
+        learningList,
+      };
+      setJsonPreview(JSON.stringify(sheetToSave, null, 2));
+    }
+  };
 
+  const toggleJsonPreview = () => {
+    if (!showJsonPreview) {
+      // Quando ativar, calcula o JSON atual
+      const values = form.getFieldsValue();
+      const sheetToSave = {
+        ...values,
+        realizationDate: moment(values.realizationDate).toDate(),
+        priorityList,
+        gratitudeList,
+        restrictionList,
+        learningList,
+      };
+      setJsonPreview(JSON.stringify(sheetToSave, null, 2));
+    }
+    setShowJsonPreview(!showJsonPreview);
   };
 
   return (
@@ -226,8 +246,26 @@ export const SheetRegisterView = () => {
           </Row>
         )}
       </Form.Item>
-      {/* Exibindo o JSON na interface */}
-      <pre>{jsonPreview}</pre>
+
+      {/* Controle para mostrar/ocultar JSON preview */}
+      <Row style={{ marginTop: "16px" }}>
+        <Col>
+          <Button
+            type="default"
+            onClick={toggleJsonPreview}
+            size="small"
+          >
+            {showJsonPreview ? "Ocultar" : "Mostrar"} JSON Preview
+          </Button>
+        </Col>
+      </Row>
+
+      {/* Exibindo o JSON na interface apenas se estiver visível */}
+      {showJsonPreview && jsonPreview && (
+        <pre style={{ marginTop: "16px", padding: "12px", backgroundColor: "#f5f5f5", borderRadius: "4px", overflow: "auto" }}>
+          {jsonPreview}
+        </pre>
+      )}
     </Form>
   );
 };

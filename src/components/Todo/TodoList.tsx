@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo, useCallback } from "react";
 import { Input, Button, List, Typography, Checkbox, Form, Row } from "antd";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import Col from "antd/es/grid/col";
@@ -22,7 +22,7 @@ interface TodoListProps {
   sliceAndListName: string;
 }
 
-export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoListProps) => {
+export const TodoList = memo(({ form, todoTitle, fieldName, sliceAndListName }: TodoListProps) => {
   const [todoItem, setTodoItem] = useState("");
   const todoItemList = useAppSelector((state) => state.todoListReducer[sliceAndListName]);
   const dispatch = useDispatch();
@@ -30,7 +30,7 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
     null
   );
 
-  const handleAddItem = () => {
+  const handleAddItem = useCallback(() => {
     try {
       form.validateFields([fieldName]);
       const values = form.getFieldsValue();
@@ -61,16 +61,16 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
     } catch (errorInfo) {
       console.error("Erro de validação:", errorInfo);
     }
-  };
+  }, [form, fieldName, todoItemList, sliceAndListName, dispatch]);
 
-  const handleKeyUp = (e: React.KeyboardEvent) => {
+  const handleKeyUp = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
       handleAddItem(); // Adiciona a tarefa ao pressionar Enter
     }
-  };
+  }, [handleAddItem]);
 
-  const handleDragEnd = (result: DropResult) => {
+  const handleDragEnd = useCallback((result: DropResult) => {
     if (!result.destination) return;
 
     const reorderedList = Array.from(todoItemList);
@@ -78,13 +78,13 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
     reorderedList.splice(result.destination.index, 0, movedItem);
 
     dispatch(reorderTodoList({ sliceName: sliceAndListName, todoList: reorderedList }));
-  };
+  }, [todoItemList, sliceAndListName, dispatch]);
 
-  const handleEditItem = (order: number, description: string) => {
+  const handleEditItem = useCallback((order: number, description: string) => {
     setEditingItem({ order, description });
-  };
+  }, []);
 
-  const handleSaveEdit = (order: number) => {
+  const handleSaveEdit = useCallback((order: number) => {
     if (editingItem) {
       dispatch(
         editTodo({
@@ -95,13 +95,31 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
       );
       setEditingItem(null);
     }
-  };
+  }, [editingItem, sliceAndListName, dispatch]);
 
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEditChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (editingItem) {
       setEditingItem({ ...editingItem, description: e.target.value });
     }
-  };
+  }, [editingItem]);
+
+  const handleToggleTodo = useCallback((order: number) => {
+    dispatch(
+      toggleTodo({
+        sliceName: sliceAndListName,
+        order: order,
+      })
+    );
+  }, [sliceAndListName, dispatch]);
+
+  const handleDeleteTodo = useCallback((order: number) => {
+    dispatch(
+      deleteTodo({
+        sliceName: sliceAndListName,
+        order: order,
+      })
+    );
+  }, [sliceAndListName, dispatch]);
 
   return (
     <div>
@@ -122,7 +140,7 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
           </Form.Item>
         </Col>
         <Col>
-          <Button type="primary" onClick={() => handleAddItem()}>
+          <Button type="primary" onClick={handleAddItem}>
             <PlusOutlined />
           </Button>
         </Col>
@@ -146,33 +164,21 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
                           {...provided.dragHandleProps}
                           actions={[
                             <Button
+                              key="edit"
                               icon={<EditOutlined />}
                               onClick={() => handleEditItem(todo.order, todo.description)}
                             />,
                             <Button
+                              key="delete"
                               icon={<DeleteOutlined />}
-                              onClick={() =>
-                                dispatch(
-                                  deleteTodo({
-                                    sliceName: sliceAndListName,
-                                    order: todo.order,
-                                  })
-                                )
-                              }
+                              onClick={() => handleDeleteTodo(todo.order)}
                             />,
                           ]}
                         >
                           <div className={"todo-item-line"}>
                             <Checkbox
                               checked={todo.isCompleted}
-                              onChange={() =>
-                                dispatch(
-                                  toggleTodo({
-                                    sliceName: sliceAndListName,
-                                    order: todo.order,
-                                  })
-                                )
-                              }
+                              onChange={() => handleToggleTodo(todo.order)}
                             />
                             {editingItem && editingItem.order === todo.order ? (
                               <Input
@@ -200,4 +206,4 @@ export const TodoList = ({ form, todoTitle, fieldName, sliceAndListName }: TodoL
       </div>
     </div>
   );
-};
+});
