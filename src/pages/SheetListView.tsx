@@ -36,8 +36,17 @@ export const SheetListView = () => {
 
 
   const sheetConsultList = async (page = 0, pageSize = 3, showInactiveRecordList = false) => {
-    const statusFilter = showInactiveRecordList ? "" : true;
-    const url = `sheets?size=${pageSize}&page=${page}&sort=id,desc&status=${statusFilter}`;
+    const params = new URLSearchParams();
+    params.set("size", String(pageSize));
+    params.set("page", String(page));
+    params.set("sort", "id,desc");
+    // API espera status=true para ativos; com "Mostrar Inativos", status vazio (como antes)
+    if (!showInactiveRecordList) {
+      params.set("status", "true");
+    } else {
+      params.set("status", "");
+    }
+    const url = `sheets?${params.toString()}`;
 
     await api
       .get(url, {

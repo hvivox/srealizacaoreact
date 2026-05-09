@@ -75,14 +75,22 @@ export const SheetRegisterView = () => {
       dispatch(setTodoList({ sliceName: "restrictionList", todoList: emptyList }));
       dispatch(setTodoList({ sliceName: "learningList", todoList: emptyList }));
 
-      form.setFieldsValue({ status: true });
+      form.setFieldsValue({ status: 1 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editRecordId, form]);
 
   const handleSubmit = (values: Sheet) => {
+    const rawStatus = values.status as unknown;
+    const statusNum =
+      rawStatus === true || rawStatus === 1 || rawStatus === "1"
+        ? 1
+        : rawStatus === false || rawStatus === 0 || rawStatus === "0"
+          ? 0
+          : Number(rawStatus);
     const sheetToSave = {
       ...values,
+      status: Number.isFinite(statusNum) ? statusNum : 1,
       realizationDate: moment(values.realizationDate).toDate(),
       priorityList,
       gratitudeList,
@@ -181,8 +189,8 @@ export const SheetRegisterView = () => {
           >
             <Input />
           </Form.Item>
-          <Form.Item name="status" hidden={true}>
-            <Input />
+          <Form.Item name="status" hidden initialValue={1}>
+            <InputNumber min={0} max={1} />
           </Form.Item>
         </Col>
       </Row>

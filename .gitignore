@@ -25,3 +25,6 @@ dist-ssr
 
 # arquivos de configuração
 .env
+
+# plugins
+.playwright-mcp
