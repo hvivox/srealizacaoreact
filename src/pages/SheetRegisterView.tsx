@@ -17,7 +17,7 @@ import {
 
 import moment from "moment";
 import { TodoList } from "../components/Todo/TodoList";
-import { Sheet, TodoItem } from "../types/Types";
+import { Sheet, TodoItem, TODO_LIST_SLICE_KEYS } from "../types/Types";
 import { useAppSelector } from "../redux/hooks/useAppSelector.tsx";
 import { setTodoList } from "../redux/reducers/todoListReducer.tsx";
 import { useDispatch } from "react-redux";
@@ -65,12 +65,12 @@ export const SheetRegisterView = () => {
           };
           form.setFieldsValue(dataFound);
 
-          dispatch(setTodoList({ sliceName: "priorityList", todoList: dataFound.priorityList }));
-          dispatch(setTodoList({ sliceName: "gratitudeList", todoList: dataFound.gratitudeList }));
+          dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.PRIORITY, todoList: dataFound.priorityList }));
+          dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.GRATITUDE, todoList: dataFound.gratitudeList }));
           dispatch(
-            setTodoList({ sliceName: "restrictionList", todoList: dataFound.restrictionList })
+            setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.RESTRICTION, todoList: dataFound.restrictionList })
           );
-          dispatch(setTodoList({ sliceName: "learningList", todoList: dataFound.learningList }));
+          dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.LEARNING, todoList: dataFound.learningList }));
         })
 
         .catch((error) => {
@@ -79,10 +79,10 @@ export const SheetRegisterView = () => {
     } else {
       const emptyList = new Array<TodoItem>();
 
-      dispatch(setTodoList({ sliceName: "priorityList", todoList: emptyList }));
-      dispatch(setTodoList({ sliceName: "gratitudeList", todoList: emptyList }));
-      dispatch(setTodoList({ sliceName: "restrictionList", todoList: emptyList }));
-      dispatch(setTodoList({ sliceName: "learningList", todoList: emptyList }));
+      dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.PRIORITY, todoList: emptyList }));
+      dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.GRATITUDE, todoList: emptyList }));
+      dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.RESTRICTION, todoList: emptyList }));
+      dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.LEARNING, todoList: emptyList }));
 
       form.setFieldsValue({ status: 1 });
     }
@@ -236,14 +236,14 @@ export const SheetRegisterView = () => {
                 form={form}
                 todoTitle="Prioridade"
                 fieldName="priority"
-                sliceAndListName="priorityList"
+                sliceAndListName={TODO_LIST_SLICE_KEYS.PRIORITY}
               />
               <Divider dashed style={{ margin: "8px 0 16px" }} />
               <TodoList
                 form={form}
                 todoTitle="Restrição"
                 fieldName="restriction"
-                sliceAndListName="restrictionList"
+                sliceAndListName={TODO_LIST_SLICE_KEYS.RESTRICTION}
               />
             </Col>
             <Col xs={24} xl={12}>
@@ -251,14 +251,14 @@ export const SheetRegisterView = () => {
                 form={form}
                 todoTitle="Aprendizagens"
                 fieldName="learning"
-                sliceAndListName="learningList"
+                sliceAndListName={TODO_LIST_SLICE_KEYS.LEARNING}
               />
               <Divider dashed style={{ margin: "8px 0 16px" }} />
               <TodoList
                 form={form}
                 todoTitle="Gratidão"
                 fieldName="gratitude"
-                sliceAndListName="gratitudeList"
+                sliceAndListName={TODO_LIST_SLICE_KEYS.GRATITUDE}
               />
             </Col>
           </Row>
