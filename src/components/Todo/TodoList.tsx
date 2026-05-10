@@ -6,8 +6,6 @@ import {
   Typography,
   Checkbox,
   Form,
-  Row,
-  Col,
   Card,
   Popconfirm,
   message,
@@ -150,25 +148,27 @@ export const TodoList = memo(({ form, todoTitle, fieldName, sliceAndListName }: 
       title={todoTitle}
       extra={<Typography.Text type="secondary">{count} itens</Typography.Text>}
     >
-      <Row gutter={16}>
-        <Col xs={18} sm={16} md={16}>
-          <Form.Item name={fieldName}>
-            <Input
-              ref={inputRef}
-              placeholder="Digite a tarefa"
-              allowClear
-              onPressEnter={() => {
-                void handleAddItem();
-              }}
-            />
-          </Form.Item>
-        </Col>
-        <Col xs={6} sm={8} md={8}>
-          <Button type="primary" onClick={() => void handleAddItem()} aria-label="Adicionar tarefa">
-            <PlusOutlined />
-          </Button>
-        </Col>
-      </Row>
+      <div className={styles.addTaskRow}>
+        <Form.Item name={fieldName} className={styles.addTaskField}>
+          <Input
+            ref={inputRef}
+            placeholder="Digite a tarefa"
+            allowClear
+            style={{ width: "100%" }}
+            onPressEnter={() => {
+              void handleAddItem();
+            }}
+          />
+        </Form.Item>
+        <Button
+          type="primary"
+          className={styles.addTaskButton}
+          onClick={() => void handleAddItem()}
+          aria-label="Adicionar tarefa"
+        >
+          <PlusOutlined />
+        </Button>
+      </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId={`droppable-${sliceAndListName}`}>

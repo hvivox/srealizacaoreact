@@ -1,0 +1,29 @@
+// Padrão visual dos Cards Ant Design (v4) — mesma base do Cadastro de folha.
+// Importar depois de antd/dist/antd.css.
+
+$app-card-border-color: #d9d9d9;
+$app-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+$app-card-radius: 8px;
+$app-card-head-border: #d9d9d9;
+
+.ant-card {
+  border-radius: $app-card-radius;
+  box-shadow: $app-card-shadow;
+}
+
+.ant-card-bordered {
+  border-color: $app-card-border-color;
+}
+
+.ant-card-head {
+  border-bottom-color: $app-card-head-border;
+}
+
+// Variante mais discreta (ex.: card técnico / secundário)
+.app-card--subtle {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+
+  .ant-card-head {
+    border-bottom-color: #e8e8e8;
+  }
+}

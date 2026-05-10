@@ -156,7 +156,7 @@ export const SheetListView = () => {
       key: "realizationDate",
       sorter: (a: Sheet, b: Sheet) =>
         new Date(a.realizationDate).getTime() - new Date(b.realizationDate).getTime(),
-      defaultSortOrder: "descend",
+      defaultSortOrder: "descend" as const,
       render: (date: Date) => new Date(date).toLocaleDateString("pt-BR"),
     },
 
