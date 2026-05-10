@@ -30,3 +30,22 @@
 .todoCard {
   margin-bottom: 16px;
 }
+
+// Campo ocupa a largura; botão ao lado, sem quebrar o Input.Group interno do Ant Design
+.addTaskRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.addTaskField {
+  flex: 1;
+  min-width: 0;
+}
+
+// Sem margin-top: o +4px anterior descia o botão em relação ao campo
+.addTaskButton {
+  flex-shrink: 0;
+  margin-top: 0;
+}
