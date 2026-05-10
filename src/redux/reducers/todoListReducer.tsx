@@ -1,9 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TodoItem } from "../../types/Types";
+import { TodoItem, TodoListSliceName } from "../../types/Types";
 
-interface TodoState {
-  [key: string]: TodoItem[]; // Chave dinâmica para diferentes listas de tarefas
-}
+type TodoState = Partial<Record<TodoListSliceName, TodoItem[]>>;
 
 const initialState: TodoState = {};
 
@@ -11,19 +9,19 @@ export const slice = createSlice({
   name: "todoListReducer",
   initialState,
   reducers: {
-    addTodo: (state, action: PayloadAction<{ sliceName: string; todo: TodoItem }>) => {
+    addTodo: (state, action: PayloadAction<{ sliceName: TodoListSliceName; todo: TodoItem }>) => {
       // Inicializa o array se ainda não existir
       if (!state[action.payload.sliceName]) {
         state[action.payload.sliceName] = [];
       }
-      state[action.payload.sliceName].push(action.payload.todo);
+      state[action.payload.sliceName]!.push(action.payload.todo);
     },
 
-    setTodoList: (state, action: PayloadAction<{ sliceName: string; todoList: TodoItem[] }>) => {
+    setTodoList: (state, action: PayloadAction<{ sliceName: TodoListSliceName; todoList: TodoItem[] }>) => {
       state[action.payload.sliceName] = action.payload.todoList;
     },
 
-    toggleTodo: (state, action: PayloadAction<{ sliceName: string; order: number }>) => {
+    toggleTodo: (state, action: PayloadAction<{ sliceName: TodoListSliceName; order: number }>) => {
       const todoList = state[action.payload.sliceName];
       if (todoList) {
         const todo = todoList.find((todo) => todo.order === action.payload.order);
@@ -35,7 +33,7 @@ export const slice = createSlice({
 
     editTodo: (
       state,
-      action: PayloadAction<{ sliceName: string; order: number; description: string }>
+      action: PayloadAction<{ sliceName: TodoListSliceName; order: number; description: string }>
     ) => {
       const todoList = state[action.payload.sliceName];
       if (todoList) {
@@ -46,7 +44,7 @@ export const slice = createSlice({
       }
     },
 
-    deleteTodo: (state, action: PayloadAction<{ sliceName: string; order: number }>) => {
+    deleteTodo: (state, action: PayloadAction<{ sliceName: TodoListSliceName; order: number }>) => {
       const todoList = state[action.payload.sliceName];
       if (todoList) {
         state[action.payload.sliceName] = todoList.filter(
@@ -55,7 +53,7 @@ export const slice = createSlice({
       }
     },
 
-    reorderTodos: (state, action: PayloadAction<{ sliceName: string; todoList: TodoItem[] }>) => {
+    reorderTodos: (state, action: PayloadAction<{ sliceName: TodoListSliceName; todoList: TodoItem[] }>) => {
       state[action.payload.sliceName] = action.payload.todoList;
     },
   },

@@ -1,3 +1,8 @@
+export type TodoListSliceName =
+  | "priorityList"
+  | "gratitudeList"
+  | "restrictionList"
+  | "learningList";
 
 export type Sheet ={
   id: number;
