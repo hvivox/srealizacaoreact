@@ -1,4 +1,4 @@
-import { Table, Modal, Row, Col, Button, Input, Checkbox, CheckboxProps } from "antd";
+import { Table, Modal, Row, Col, Button, Input, Checkbox, CheckboxProps, Tag } from "antd";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -152,6 +152,13 @@ export const SheetListView = () => {
       title: "Nota",
       dataIndex: "dayNote",
       key: "dayNote",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status: number | boolean) =>
+        status ? <Tag color="green">Ativo</Tag> : <Tag color="red">Inativo</Tag>,
     },
     {
       title: "Ações",
