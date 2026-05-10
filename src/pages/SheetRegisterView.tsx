@@ -63,7 +63,6 @@ export const SheetRegisterView = () => {
 
         .catch((error) => {
           // Erro já é tratado pelo interceptor (useErrorHandler)
-          // eslint-disable-next-line no-console
           console.error("Erro ao buscar folha", error);
         });
     } else {
@@ -115,7 +114,6 @@ export const SheetRegisterView = () => {
       })
       .catch((error) => {
         // Erro já é tratado pelo interceptor (useErrorHandler)
-        // eslint-disable-next-line no-console
         console.error("Erro inesperado", error);
       })
   };

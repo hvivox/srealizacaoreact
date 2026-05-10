@@ -255,9 +255,7 @@ export const HomeView = () => {
                   <p>
                     <Text type="secondary">Data de Entrega: </Text>
                     {ultimaFolha.realizationDate
-                      ? new Date(
-                          ultimaFolha.realizationDate
-                        ).toLocaleDateString("pt-BR")
+                      ? new Date(ultimaFolha.realizationDate).toLocaleDateString("pt-BR")
                       : "-"}
                   </p>
                   <p>
@@ -285,34 +283,18 @@ export const HomeView = () => {
               <List
                 dataSource={top5}
                 locale={{ emptyText: <Empty description="Sem dados" /> }}
-                renderItem={(item) => (
-                  <List.Item
-                    extra={
-                      <Tag
-                        color={
-                          item.dayNote >= 8
-                            ? "green"
-                            : item.dayNote >= 5
-                            ? "blue"
-                            : "orange"
-                        }
-                      >
-                        Nota {item.dayNote}
-                      </Tag>
-                    }
-                  >
-                    <List.Item.Meta
-                      title={`#${item.id} — ${item.focus}`}
-                      description={
-                        item.realizationDate
-                          ? new Date(item.realizationDate).toLocaleDateString(
-                              "pt-BR"
-                            )
-                          : ""
-                      }
-                    />
-                  </List.Item>
-                )}
+                renderItem={(item) => {
+                  const tagColor =
+                    item.dayNote >= 8 ? "green" : item.dayNote >= 5 ? "blue" : "orange";
+                  const dateStr = item.realizationDate
+                    ? new Date(item.realizationDate).toLocaleDateString("pt-BR")
+                    : "";
+                  return (
+                    <List.Item extra={<Tag color={tagColor}>Nota {item.dayNote}</Tag>}>
+                      <List.Item.Meta title={`#${item.id} — ${item.focus}`} description={dateStr} />
+                    </List.Item>
+                  );
+                }}
               />
             </Skeleton>
           </Card>

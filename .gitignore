@@ -24,10 +24,12 @@ dist-ssr
 *.sw?
 
 # arquivos outros importantes
+.cursor/
 yarn.lock
 package-lock.json
 .prettierrc
 build/
+
 
 # arquivos de configuração
 .env
