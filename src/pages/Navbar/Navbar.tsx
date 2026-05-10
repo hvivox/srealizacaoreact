@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router";
+import React, { useMemo } from "react";
+import { Link, useLocation } from "react-router";
 import { Menu, Typography, Layout } from "antd";
 import { useAppSelector } from "../../redux/hooks/useAppSelector";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
@@ -9,7 +9,26 @@ import { useAuth } from "../../hooks/useAuth"; // Importa o hook useAuth do cont
 const { Header } = Layout;
 const { Title } = Typography;
 
+/** Alinha o item ativo do menu com a rota atual (evita ficar marcado "Sobre" após ir à Home, etc.). */
+function selectedKeysForPath(pathname: string): string[] {
+  if (pathname === "/" || pathname === "") {
+    return ["home"];
+  }
+  if (pathname.startsWith("/sheet-list")) {
+    return ["sheet-list"];
+  }
+  if (pathname.startsWith("/about")) {
+    return ["about"];
+  }
+  if (pathname.startsWith("/sheet")) {
+    return [];
+  }
+  return [];
+}
+
 export const Navbar: React.FC = () => {
+  const { pathname } = useLocation();
+  const selectedKeys = useMemo(() => selectedKeysForPath(pathname), [pathname]);
   const user = useAppSelector((state) => state.user);
   const { logOut } = useAuth();
 
@@ -54,7 +73,13 @@ export const Navbar: React.FC = () => {
             Realização
           </Title>
         </div>
-        <Menu theme="dark" mode="horizontal" className="navbar-menu" items={items} />
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          className="navbar-menu"
+          items={items}
+          selectedKeys={selectedKeys}
+        />
       </div>
     </Header>
   );
