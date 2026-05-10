@@ -144,10 +144,11 @@ export const TodoList = memo(({ form, todoTitle, fieldName, sliceAndListName }: 
 
   return (
     <Card
+      className={styles.todoCard}
       size="small"
+      bordered
       title={todoTitle}
       extra={<Typography.Text type="secondary">{count} itens</Typography.Text>}
-      style={{ marginBottom: 16 }}
     >
       <Row gutter={16}>
         <Col xs={18} sm={16} md={16}>
