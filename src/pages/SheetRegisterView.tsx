@@ -287,7 +287,7 @@ export const SheetRegisterView = () => {
         </div>
 
         {showJsonPreview && jsonPreview ? (
-          <Card size="small" title="JSON (técnico)" className={styles.jsonCard}>
+          <Card size="small" title="JSON (técnico)" className={`${styles.jsonCard} app-card--subtle`}>
             <pre className={styles.jsonPre}>{jsonPreview}</pre>
           </Card>
         ) : null}
