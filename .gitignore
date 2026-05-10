@@ -23,6 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 
+# arquivos outros importantes
+yarn.lock
+package-lock.json
+.prettierrc
+build/
+
 # arquivos de configuração
 .env
 
