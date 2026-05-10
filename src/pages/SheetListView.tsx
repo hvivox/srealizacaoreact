@@ -1,4 +1,4 @@
-import { Table, Modal, Row, Col, Button, Input, Checkbox, CheckboxProps } from "antd";
+import { Table, Modal, Row, Col, Button, Input, Checkbox, CheckboxProps, Tag } from "antd";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -39,7 +39,7 @@ export const SheetListView = () => {
     const params = new URLSearchParams();
     params.set("size", String(pageSize));
     params.set("page", String(page));
-    params.set("sort", "id,desc");
+    params.set("sort", "realizationDate,desc");
     // API espera status=true para ativos; com "Mostrar Inativos", status vazio (como antes)
     if (!showInactiveRecordList) {
       params.set("status", "true");
@@ -55,7 +55,13 @@ export const SheetListView = () => {
         },
       })
       .then((response) => {
-        setEntityList(response.data.content as Sheet[]);
+        const list = response.data.content as Sheet[];
+        setEntityList(
+          [...list].sort(
+            (a, b) =>
+              new Date(b.realizationDate).getTime() - new Date(a.realizationDate).getTime()
+          )
+        );
 
         setPagination((pagination) => ({
           ...pagination,
@@ -123,9 +129,12 @@ export const SheetListView = () => {
   };
 
   const filterList = (searchValue: string) => {
-    const filteredList = entityList.filter((item) =>
-      item.focus.toLowerCase().includes(searchValue.toLowerCase())
-    );
+    const filteredList = entityList
+      .filter((item) => item.focus.toLowerCase().includes(searchValue.toLowerCase()))
+      .sort(
+        (a, b) =>
+          new Date(b.realizationDate).getTime() - new Date(a.realizationDate).getTime()
+      );
     setFilteredEntityList(filteredList);
   };
 
@@ -145,6 +154,9 @@ export const SheetListView = () => {
       title: "Data Entrega",
       dataIndex: "realizationDate",
       key: "realizationDate",
+      sorter: (a: Sheet, b: Sheet) =>
+        new Date(a.realizationDate).getTime() - new Date(b.realizationDate).getTime(),
+      defaultSortOrder: "descend",
       render: (date: Date) => new Date(date).toLocaleDateString("pt-BR"),
     },
 
@@ -152,6 +164,13 @@ export const SheetListView = () => {
       title: "Nota",
       dataIndex: "dayNote",
       key: "dayNote",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status: number | boolean) =>
+        status ? <Tag color="green">Ativo</Tag> : <Tag color="red">Inativo</Tag>,
     },
     {
       title: "Ações",

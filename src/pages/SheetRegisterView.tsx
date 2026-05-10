@@ -1,23 +1,36 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router";
-import { DatePicker, Form, Input, InputNumber, Button, Row, Col, Divider, Grid } from "antd";
+import {
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Button,
+  Row,
+  Col,
+  Divider,
+  Typography,
+  Card,
+  Space,
+  Tag,
+} from "antd";
 
 import moment from "moment";
-import { TitleForm } from "../components/LayoutForm/TitleForm";
 import { TodoList } from "../components/Todo/TodoList";
-import { Sheet, TodoItem } from "../types/Types";
+import { Sheet, TodoItem, TODO_LIST_SLICE_KEYS } from "../types/Types";
 import { useAppSelector } from "../redux/hooks/useAppSelector.tsx";
 import { setTodoList } from "../redux/reducers/todoListReducer.tsx";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../hooks/useAuth.ts";
 import { api } from "../services/api.ts";
 import { notifySuccess } from "../utils/notification.ts";
-const { useBreakpoint } = Grid;
+import styles from "./SheetRegisterView.module.scss";
+
+const { Title, Text, Paragraph } = Typography;
 
 export const SheetRegisterView = () => {
   const { token } = useAuth();
   const tokenHeader = token;
-  const screens = useBreakpoint();
 
   const [form] = Form.useForm();
 
@@ -52,28 +65,24 @@ export const SheetRegisterView = () => {
           };
           form.setFieldsValue(dataFound);
 
-          // Despachar ações para preencher as listas
-          dispatch(setTodoList({ sliceName: "priorityList", todoList: dataFound.priorityList }));
-          dispatch(setTodoList({ sliceName: "gratitudeList", todoList: dataFound.gratitudeList }));
+          dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.PRIORITY, todoList: dataFound.priorityList }));
+          dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.GRATITUDE, todoList: dataFound.gratitudeList }));
           dispatch(
-            setTodoList({ sliceName: "restrictionList", todoList: dataFound.restrictionList })
+            setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.RESTRICTION, todoList: dataFound.restrictionList })
           );
-          dispatch(setTodoList({ sliceName: "learningList", todoList: dataFound.learningList }));
+          dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.LEARNING, todoList: dataFound.learningList }));
         })
 
         .catch((error) => {
-          // Erro já é tratado pelo interceptor (useErrorHandler)
-          // eslint-disable-next-line no-console
           console.error("Erro ao buscar folha", error);
         });
     } else {
-      // criar uma variavel com todoList vazio
       const emptyList = new Array<TodoItem>();
 
-      dispatch(setTodoList({ sliceName: "priorityList", todoList: emptyList }));
-      dispatch(setTodoList({ sliceName: "gratitudeList", todoList: emptyList }));
-      dispatch(setTodoList({ sliceName: "restrictionList", todoList: emptyList }));
-      dispatch(setTodoList({ sliceName: "learningList", todoList: emptyList }));
+      dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.PRIORITY, todoList: emptyList }));
+      dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.GRATITUDE, todoList: emptyList }));
+      dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.RESTRICTION, todoList: emptyList }));
+      dispatch(setTodoList({ sliceName: TODO_LIST_SLICE_KEYS.LEARNING, todoList: emptyList }));
 
       form.setFieldsValue({ status: 1 });
     }
@@ -114,15 +123,11 @@ export const SheetRegisterView = () => {
         navigate("/sheet-list");
       })
       .catch((error) => {
-        // Erro já é tratado pelo interceptor (useErrorHandler)
-        // eslint-disable-next-line no-console
         console.error("Erro inesperado", error);
       })
   };
 
-  // Atualiza o JSON sempre que os campos do formulário forem alterados
   const handleValuesChange = (_changedValues: Sheet, allValues: Sheet) => {
-    // Só atualiza o JSON se o preview estiver visível
     if (showJsonPreview) {
       const sheetToSave = {
         ...allValues,
@@ -138,7 +143,6 @@ export const SheetRegisterView = () => {
 
   const toggleJsonPreview = () => {
     if (!showJsonPreview) {
-      // Quando ativar, calcula o JSON atual
       const values = form.getFieldsValue();
       const sheetToSave = {
         ...values,
@@ -154,126 +158,140 @@ export const SheetRegisterView = () => {
   };
 
   return (
-    <Form form={form} layout="vertical" onFinish={handleSubmit} onValuesChange={handleValuesChange}>
-      <Row gutter={16} style={{ marginTop: "10px" }}>
-        <Col xs={24} md={11}>
-          <TitleForm>Cadastro de Folha</TitleForm>
-        </Col>
-        <Col span={8}>
-          <Form.Item
-            label="Data de Realização"
-            name="realizationDate"
-            rules={[{ required: true, message: "Preencha o campo data" }]}
-          >
-            <DatePicker />
-          </Form.Item>
-        </Col>
-        <Col xs={24} md={11}>
-          {" "}
-          <Form.Item
-            label="Nota do Dia"
-            name="dayNote"
-            rules={[{ required: true, message: "Preencha o campo nota do dia" }]}
-            initialValue={0}
-          >
-            <InputNumber min={1} max={10} />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row gutter={16}>
-        <Col xs={24} md={11}>
-          <Form.Item
-            label="Foco"
-            name="focus"
-            rules={[{ required: true, message: "Preencha o campo foco" }]}
-          >
-            <Input />
-          </Form.Item>
+    <div className={styles.page}>
+      <Space direction="vertical" size={4} style={{ width: "100%" }}>
+        <Space align="center" wrap size={8}>
+          <Title level={2} style={{ margin: 0 }}>
+            Cadastro de folha
+          </Title>
+          {editRecordId ? (
+            <Tag color="processing">Edição · id {editRecordId}</Tag>
+          ) : (
+            <Tag color="default">Nova folha</Tag>
+          )}
+        </Space>
+        <Paragraph type="secondary" className={styles.lead} style={{ marginBottom: 0 }}>
+          Defina a data, a nota e o foco. Depois preencha as quatro listas: pode arrastar itens para
+          reordenar e confirmar antes de apagar.
+        </Paragraph>
+      </Space>
+
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        onValuesChange={handleValuesChange}
+        requiredMark="optional"
+        style={{ marginTop: 8 }}
+      >
+        <Card title="Dados principais" className={styles.sectionCard} bordered>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={12} lg={10}>
+              <Form.Item
+                label="Data de realização"
+                name="realizationDate"
+                rules={[{ required: true, message: "Escolha a data" }]}
+                tooltip="Data a que esta folha se refere"
+              >
+                <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" placeholder="Selecione" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={12} lg={10}>
+              <Form.Item
+                label="Nota do dia"
+                name="dayNote"
+                rules={[{ required: true, message: "Indique a nota (1 a 10)" }]}
+                initialValue={1}
+                tooltip="Avaliação do dia numa escala de 1 a 10"
+              >
+                <InputNumber min={1} max={10} style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24}>
+              <Form.Item
+                label="Foco"
+                name="focus"
+                rules={[{ required: true, message: "Descreva o foco do dia" }]}
+                tooltip="Tema ou objetivo central desta folha"
+              >
+                <Input placeholder="Ex.: alinhamento com a equipa, entrega ao cliente…" allowClear />
+              </Form.Item>
+            </Col>
+          </Row>
           <Form.Item name="status" hidden initialValue={1}>
             <InputNumber min={0} max={1} />
           </Form.Item>
-        </Col>
-      </Row>
-      <Row gutter={16}>
-        <Col xs={24} md={11}>
-          <TodoList
-            form={form}
-            todoTitle="Prioridade"
-            fieldName="priority"
-            sliceAndListName="priorityList"
-          />
+        </Card>
 
-          <Divider orientation="left" ></Divider>
-          <TodoList
-            form={form}
-            todoTitle="Restrição"
-            fieldName="restriction"
-            sliceAndListName="restrictionList"
-          />
-        </Col>
-
-        <Col>
-          <Divider type={screens.xs ? "horizontal" : "vertical"} style={{ height: "100%" }} />
-        </Col>
-
-        <Col xs={24} md={11}>
-          <TodoList
-            form={form}
-            todoTitle="Aprendizagens"
-            fieldName="learning"
-            sliceAndListName="learningList"
-          />
-          <Divider orientation="left"></Divider>
-          <TodoList
-            form={form}
-            todoTitle="Gratidão"
-            fieldName="gratitude"
-            sliceAndListName="gratitudeList"
-          />
-        </Col>
-      </Row>
-
-      {/* Botões para salvar e voltar */}
-      <Form.Item shouldUpdate>
-        {() => (
-          <Row gutter={1} style={{ marginTop: "4%", justifyContent: "flex-end" }}>
-            <Col span={6}>
-              <Button onClick={() => navigate("/sheet-list")} style={{ marginLeft: "8px" }}>
-                Voltar
-              </Button>
+        <Card title="Listas de reflexão" className={styles.sectionCard} bordered>
+          <Text type="secondary">
+            Quatro blocos independentes. Cada um tem o seu campo de texto e o botão + para adicionar.
+          </Text>
+          <Divider style={{ margin: "16px 0" }} />
+          <Row gutter={[24, 24]} className={styles.listsRow}>
+            <Col xs={24} xl={12}>
+              <TodoList
+                form={form}
+                todoTitle="Prioridade"
+                fieldName="priority"
+                sliceAndListName={TODO_LIST_SLICE_KEYS.PRIORITY}
+              />
+              <Divider dashed style={{ margin: "8px 0 16px" }} />
+              <TodoList
+                form={form}
+                todoTitle="Restrição"
+                fieldName="restriction"
+                sliceAndListName={TODO_LIST_SLICE_KEYS.RESTRICTION}
+              />
             </Col>
-            <Col span={6}>
-              <Button
-                type="primary"
-                onClick={() => form.submit()}
-                disabled={form.getFieldsError().filter(({ errors }) => errors.length).length > 0}
-              >
-                Salvar
-              </Button>
+            <Col xs={24} xl={12}>
+              <TodoList
+                form={form}
+                todoTitle="Aprendizagens"
+                fieldName="learning"
+                sliceAndListName={TODO_LIST_SLICE_KEYS.LEARNING}
+              />
+              <Divider dashed style={{ margin: "8px 0 16px" }} />
+              <TodoList
+                form={form}
+                todoTitle="Gratidão"
+                fieldName="gratitude"
+                sliceAndListName={TODO_LIST_SLICE_KEYS.GRATITUDE}
+              />
             </Col>
           </Row>
-        )}
-      </Form.Item>
+        </Card>
 
-      {/* Controle para mostrar/ocultar JSON preview */}
-      <Row style={{ marginTop: "16px" }}>
-        <Col>
-          <Button
-            type="default"
-            onClick={toggleJsonPreview}
-            size="small"
-          >
-            {showJsonPreview ? "Ocultar" : "Mostrar"} JSON Preview
+        <div className={styles.footerBar}>
+          <Button type="link" onClick={toggleJsonPreview} style={{ paddingLeft: 0 }}>
+            {showJsonPreview ? "Ocultar pré-visualização JSON" : "Mostrar pré-visualização JSON"}
           </Button>
-        </Col>
-      </Row>
+          <div className={styles.footerActions}>
+            <Button onClick={() => navigate("/sheet-list")}>Voltar à lista</Button>
+            <Form.Item shouldUpdate noStyle>
+              {() => (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  disabled={
+                    form.getFieldsError().filter(({ errors }) => errors.length).length > 0
+                  }
+                >
+                  Salvar folha
+                </Button>
+              )}
+            </Form.Item>
+          </div>
+        </div>
 
-      {/* Exibindo o JSON na interface apenas se estiver visível */}
-      {showJsonPreview && jsonPreview && (
-        <pre style={{ marginTop: "16px", padding: "12px", backgroundColor: "#f5f5f5", borderRadius: "4px", overflow: "auto" }}>
-          {jsonPreview}
-        </pre>
-      )}
-    </Form>
+        {showJsonPreview && jsonPreview ? (
+          <Card size="small" title="JSON (técnico)" className={styles.jsonCard}>
+            <pre className={styles.jsonPre}>{jsonPreview}</pre>
+          </Card>
+        ) : null}
+      </Form>
+    </div>
   );
 };

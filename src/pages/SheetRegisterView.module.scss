@@ -1,0 +1,66 @@
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 0 32px;
+}
+
+.lead {
+  display: block;
+  margin-bottom: 24px;
+}
+
+.sectionCard {
+  margin-bottom: 24px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sectionCard :global(.ant-card-head) {
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.jsonCard {
+  margin-top: 8px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.jsonCard :global(.ant-card-head) {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.listsRow {
+  margin-top: 8px;
+}
+
+.footerBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.footerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.jsonPre {
+  margin: 0;
+  padding: 16px;
+  max-height: 360px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.5;
+  background: #fafafa;
+  border-radius: 6px;
+  border: 1px solid #f0f0f0;
+}

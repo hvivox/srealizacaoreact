@@ -1,10 +1,16 @@
 import { notification } from 'antd';
+import axios from 'axios';
 
 export const notifySuccess = (message = 'Operação realizada com sucesso.') =>
   notification.success({ message, className: 'success-notification' });
 
 export const notifyError = (message = 'Erro inesperado, tente novamente mais tarde.') =>
   notification.error({ message, className: 'error-notification' });
+
+type ErrorBody = {
+  message?: string;
+  error?: string;
+};
 
 /**
  * Extrai uma mensagem de erro específica de um objeto de erro
@@ -13,24 +19,23 @@ export const notifyError = (message = 'Erro inesperado, tente novamente mais tar
  * @returns Mensagem de erro específica ou a mensagem padrão
  */
 export const getErrorMessage = (
-  error: any,
+  error: unknown,
   defaultMessage = 'Erro inesperado, tente novamente mais tarde.'
 ): string => {
-  // Tenta extrair mensagem do response.data.message (erros de validação)
-  if (error?.response?.data?.message) {
-    return error.response.data.message;
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as ErrorBody | undefined;
+    if (data?.message) {
+      return data.message;
+    }
+    if (data?.error) {
+      return data.error;
+    }
+    if (error.message) {
+      return error.message;
+    }
   }
-
-  // Tenta extrair mensagem do response.data.error (erros do servidor)
-  if (error?.response?.data?.error) {
-    return error.response.data.error;
-  }
-
-  // Tenta extrair mensagem direta do error.message (erros de rede, etc)
-  if (error?.message) {
+  if (error instanceof Error && error.message) {
     return error.message;
   }
-
-  // Retorna mensagem padrão se não conseguir extrair nenhuma mensagem
   return defaultMessage;
 };

@@ -1,3 +1,12 @@
+/** Chaves do estado Redux/API para cada lista de itens — evita strings soltas no código. */
+export const TODO_LIST_SLICE_KEYS = {
+  PRIORITY: "priorityList",
+  GRATITUDE: "gratitudeList",
+  RESTRICTION: "restrictionList",
+  LEARNING: "learningList",
+} as const;
+
+export type TodoListSliceName = (typeof TODO_LIST_SLICE_KEYS)[keyof typeof TODO_LIST_SLICE_KEYS];
 
 export type Sheet ={
   id: number;
